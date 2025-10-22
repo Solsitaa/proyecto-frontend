@@ -1,0 +1,94 @@
+body {
+    background-color: lightcyan;
+    width: 1500px;
+}
+
+nav {
+  display: flex;                 /* Coloca el título y los botones en línea */
+  justify-content: space-between;/* Separa el h1 a la izquierda y los botones a la derecha */
+  align-items:center;           /* Centra verticalmente */
+       /* Color de fondo */
+  padding: 15px 30px;
+  margin: 0px
+}
+
+.logo {
+    height: 90px;
+    width: auto;
+    background-color: lightcyan;  
+    filter: brightness(1.05) contrast(1.1);
+    mix-blend-mode: darken;
+}
+
+nav ul {
+  list-style: none;              /* Quita los puntos */
+  display: flex;                 /* Alinea los botones horizontalmente */
+  justify-content: space-around;
+  gap: 20px;                     /* Espacio entre botones */
+  margin: 0;
+  padding: 0;
+}
+nav li {
+    display: flex;
+}
+
+nav button {
+  background-color: white;
+  color: #6bc5a1;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background-color: #5aa78a;
+  color: white;
+}
+.objetivo {
+    height: auto;
+    width: auto;
+    padding: 40px;
+}
+.objetivo p {
+    color: black;
+    font-size: 18px;
+}
+.box2{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 350px;
+}
+.text1 {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 30px;
+    margin: 0px;
+}
+.text1 h1{
+    font-size: 45px;
+}
+.btns {
+    display: flex;
+    gap: 20px;
+
+}
+.btn4, .btn5{
+    background-color: antiquewhite;
+    width: 250px;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    gap: 50px;
+}
+.afiche-apoyo {
+    width: 350px;
+    background-color: lightcyan;  
+    filter: brightness(1.05) contrast(1.1);
+    mix-blend-mode: darken;
+
+}
