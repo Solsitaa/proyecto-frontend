@@ -86,11 +86,14 @@ nav button:hover {
     mix-blend-mode: darken;
 }
 .objetivo {
-    height: auto;
+    height: 200px;
     width: auto;
     padding: 5px 15px;
-    border: 5px solid #DEA193;
+    border: 2px solid #E6E6FA;
     border-radius: 10px;
+    background-color: #E6E6FA;
+    align-self: center;
+    
 }
 .objetivo p {
     color: black;
@@ -99,7 +102,30 @@ nav button:hover {
 .box1 {
     width: 1250px;
 }
-.box2 {
-    border: 2px solid coral;
-    border-radius: 10px;
+.box3 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 450px;
+    
+}
+.box3 img{
+    filter: brightness(1.05) contrast(1.1);
+    mix-blend-mode: darken;
+}
+.imgs {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    
+}
+.imgs img{
+    height: 150px;
+    width: auto;
+    filter: brightness(1.05) contrast(1.1);
+    mix-blend-mode: darken;
+}
+.box4 {
+    padding: 10px 30px;
+    margin: 0px;
 }
