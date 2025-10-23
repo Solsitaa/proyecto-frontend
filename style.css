@@ -1,6 +1,6 @@
 body {
     background-color: lightcyan;
-    margin: 0;
+    width: 1425px;
     display: flex; /* activa flexbox */
     justify-content: center; /* centra horizontalmente */
     align-items: center;     /* centra verticalmente */
@@ -129,3 +129,81 @@ nav button:hover {
     padding: 10px 30px;
     margin: 0px;
 }
+.foro-apoyo {
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 180px;
+    padding-left: 20px;
+}
+.chat {
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 180px;
+    padding-left: 20px;
+}
+.contactos {
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 180px;
+    padding-left: 20px;
+}
+/*h2, h3 {
+  font-family: 'Nunito', sans-serif;
+  color: #2F4F4F; /* tono gris oscuro compatible con lightcyan 
+  font-weight: 600;
+}*/
+h2, h3 {
+  font-family: 'Raleway', sans-serif;
+  color: #191970; /* azul oscuro para contraste suave */
+  letter-spacing: 0.4px;
+}
+.box4 button{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+.box4 button:hover{
+    text-decoration: underline;
+}
+.box5 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 300px;
+    border:none;
+    background-color: #CFE9F5;
+
+}
+.foro1 {
+    background-color: #FFD6E0;
+    border-radius: 3px;
+}
+.contacto1 {
+    background-color: #FFE5B4;
+}
+footer {
+  display: flex;
+  justify-content: space-between; /* separa a izquierda y derecha */
+  align-items: center;            /* centra verticalmente */
+  padding: 15px 40px;
+  background-color: #E6E6FA;      /* lavanda suave */
+  border-top: 2px solid #b8a8f3;  /* línea superior */
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+.footer-links a {
+  color: #4b0082;
+  text-decoration: none;
+  margin-left: 20px;           /* espacio entre los enlaces */
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #6a0dad;              /* tono violeta más intenso al pasar el mouse */
+}
+div {
+  margin-bottom: 20px; /* agrega espacio debajo de cada div */
+}
+
