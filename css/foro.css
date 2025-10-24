@@ -1,0 +1,60 @@
+body{
+    padding-left: 200px;
+    padding-right: 200px;
+    background-color: lightcyan;
+}
+nav{
+    height: 100px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+nav h1{
+    font-size: 40px;
+}
+input{
+    height: 20px;
+    width: 800px;
+    padding: 5px;
+}
+#init{
+    height: 40px;
+    width: 120px;
+    background-color: #1f8fff;
+    color: white;
+}
+.post{
+    display: flex;
+    width: 850px; 
+    flex-direction: column;
+    gap: 50px;
+    margin-top: 50px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+.text{
+    border: 3px solid black;
+    padding: 20px;
+}
+.post h3{
+    font-style: oblique;
+}
+.contenedor{
+    display: flex;
+    width: 1200%;
+    gap: 50px;
+    flex-wrap: wrap
+}
+.destacados{
+    height: 100px;
+    width: 500px;
+    margin: 50px;
+    border: 3px solid;
+    text-align: start;
+    padding: 20px;
+}
+.reputacion{
+    padding: 5px;
+    background-color: #fffece;
+    cursor: pointer;
+}
