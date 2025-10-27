@@ -1,0 +1,13 @@
+body {
+    background-color: beige;
+    width: 1250px;
+    min-height: 100vh; /* Altura mínima del viewport completo */
+    display: flex; /* Hacer el body flex también */
+    align-items: center; /* Centra verticalmente */
+    
+}
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
