@@ -1,15 +1,35 @@
+<%-- perfil.jsp --%>
+<%@ page import="com.tuapp.modelo.User" %><--EDITAR ESTO-->
+<%
+    User usuario = (User) session.getAttribute("usuario");
+    if (usuario == null) {
+        response.sendRedirect("login.html");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-  <title>Mi perfil Mente Libre</title>
-  <link rel="stylesheet" href="./../css/style2.css">
-    </head>
-    <body>
-        <div class="contenedor">
-            <div class="box-izq">
-                
-            </div>
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil - <%= usuario.getNombre() %></title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Mi Perfil</h1>
+        
+        <div class="info-usuario">
+            <p><strong>Nombre:</strong> <%= usuario.getNombre() %></p>
+            <p><strong>Email:</strong> <%= usuario.getEmail() %></p>
+            <p><strong>ID:</strong> <%= usuario.getId() %></p>
         </div>
-    </body>
+        
+        <div class="botones">
+            <a href="editar-perfil.jsp" class="btn">Editar Perfil</a>
+            <a href="cambiar-password.jsp" class="btn">Cambiar Contraseña</a>
+            <a href="dashboard.jsp" class="btn">Volver al Dashboard</a>
+            <a href="logout" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
+    </div>
+</body>
 </html>

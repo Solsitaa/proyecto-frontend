@@ -9,23 +9,24 @@
         <div class="contenedor">
             <div class="box1">
                 <h1>Registrate</h1>
+                <form action="registro" method="POST">
                 <p>Nombre</p>
-                <input type="text" id="nombre" placeholder="Ingresa tu nombre.">
+                <input type="text" id="nombre" placeholder="Ingresa tu nombre." required>
                 <p>Apellido</p>
-                <input type="text" id="apellido" placeholder="Ingresa tu apellido.">
+                <input type="text" id="apellido" placeholder="Ingresa tu apellido." required>
                 <p>Correo</p>
-                <input type="text" placeholder="tu.correo@example.com">
+                <input type="text" id="email" placeholder="tu.correo@example.com" required>
                 <p>Nombre de usuario</p>
-                <input type="text" placeholder="Elije tu nombre de usuario">
+                <input type="text" id="userName" placeholder="Elije tu nombre de usuario" required>
                 <p>Contraseña</p>
-                <input type="text" placeholder="Ingresa una contraseña segura">
+                <input type="text" id="password" placeholder="Ingresa una contraseña segura" required>
                 <p>Confirma Contraseña</p>
-                <input type="text" placeholder="Vuelve a escribir tu contraseña">
+                <input type="text"id="passwordConfirm" placeholder="Vuelve a escribir tu contraseña" required>
                 <button>Registrarse</button>
                 <p>Al registrarte aceptas nuestras políticas de privacidad y términos y condiciones.</p>
-                <h3>¿Ya tienes una cuenta? </h3>
-                <a href="login.html">Ingresa aquí.</a>
+                <h3>¿Ya tienes una cuenta? </h3> <a href="login.html">Ingresa aquí.</a>
             </div>
+        </form>
         </div>
     </body>
 </html>
