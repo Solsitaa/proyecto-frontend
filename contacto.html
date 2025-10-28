@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mente Libre - Contacto</title>
+        <link rel="stylesheet" href="/css/contacto.css">
+    </head>
+<body>
+
+    <header>
+    🧠 Mente Libre
+    </header>
+
+    <main class="contenedor-contacto">
+        <h1>Contáctanos</h1>
+        <p>Si tienes dudas, sugerencias o necesitas apoyo técnico, completa el siguiente formulario y nos pondremos en contacto contigo.</p>
+
+        <form action="/enviar-contacto" method="POST" class="formulario-contacto">
+        <div class="grupo">
+            <label for="nombre">Nombre completo:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+        </div>
+
+        <div class="grupo">
+            <label for="correo">Correo electrónico:</label>
+            <input type="email" id="correo" name="correo" placeholder="tunombre@ejemplo.com" required>
+        </div>
+
+        <div class="grupo">
+            <label for="asunto">Asunto:</label>
+            <input type="text" id="asunto" name="asunto" placeholder="Motivo del contacto" required>
+        </div>
+
+        <div class="grupo">
+            <label for="mensaje">Mensaje:</label>
+            <textarea id="mensaje" name="mensaje" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-enviar">Enviar mensaje</button>
+        </form>
+
+        <div class="info-contacto">
+        <h3>O contáctanos directamente:</h3>
+        <p>📧 contacto@mentelibre.cl</p>
+        <p>📱 +56 9 8765 4321</p>
+        </div>
+    </main>
+
+</body>
+</html>

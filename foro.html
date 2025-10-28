@@ -3,14 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petlopedia</title>
+    <title>Foro</title>
     <link href="./css/foro.css" rel="stylesheet">
 </head>
 <body>
     <nav>
-        <h1>Mente Libre</h1>
+        <header class="logoNav">
+            <a href="index.html">
+                <img src="/img/logo.png" class="logo" alt="Logo">
+            </a>
+                <h1>  Mente Libre </h1>
+            
+        </header>
         <input type="text" placeholder="&#x1F50D;Buscar">
-        <button id="init">iniciar sesion</button>
+        <div>
+            <a href="CrearPost.html">Crear Post</a>
+            <a href="MisPost.html">Mis Post</a>
+            <a href="perfil.html">Perfil</a>
+            <button id="init">iniciar sesion</button>
+            <a href="login.html"></a><button id="register"> Registrarse</button></a>
+        </div>
     </nav>
     <div class="contenedor">
         <div class="post">
@@ -26,14 +38,30 @@
             </div>    
         </div>
         <div class="destacados">
-            <h3>Usuarios Destacados</h3>
+            <h2>Usuarios Destacados</h2>
             <ul>
-                <li>Usuario1</li>
-                <li>Usuario2</li>
-                <li>Usuario3</li>
-                <li>Usuario4</li>
+                <li>
+                    <a>
+                    <img src="/img/user1.png" alt="Usuario1" class="userIcon">Usuario1
+                    </a>
+                </li>
+                <li>
+                    <a>
+                    <img src="/img/user2.png" alt="Usuario2" class="userIcon">Usuario2
+                    </a>
+                </li>
+                <li>
+                    <a>
+                    <img src="/img/user3.png" alt="Usuario3" class="userIcon">Usuario3
+                    </a>
+                </li>
+                <li>
+                    <a>
+                    <img src="/img/user4.png" alt="Usuario4" class="userIcon">Usuario4
+                    </a>
+                </li>
         </div>
     </div>
-    <script src="./js/index.js"></script>
+    <script src="./js/script.js"></script>
 </body>
 </html>

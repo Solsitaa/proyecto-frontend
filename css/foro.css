@@ -1,20 +1,23 @@
 body{
-    padding-left: 200px;
-    padding-right: 200px;
-    background-color: lightcyan;
+    margin: 0px;
+    background-color: #f5f6fa;
+    padding: 0px;
 }
 nav{
     height: 100px;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    background-color: #211931;
+    
 }
 nav h1{
     font-size: 40px;
+    color: white;
 }
 input{
     height: 20px;
-    width: 800px;
+    width: 500px;
     padding: 5px;
 }
 #init{
@@ -22,6 +25,10 @@ input{
     width: 120px;
     background-color: #1f8fff;
     color: white;
+}
+#register{
+    height: 40px;
+    width: 120px;
 }
 .post{
     display: flex;
@@ -35,26 +42,55 @@ input{
 .text{
     border: 3px solid black;
     padding: 20px;
+    border-radius: 20px;
 }
 .post h3{
     font-style: oblique;
 }
 .contenedor{
     display: flex;
-    width: 1200%;
+    width: 100%;
+    max-width: 1200px;
     gap: 50px;
-    flex-wrap: wrap
+    padding-left: 200px;
+    padding-right: 200px;
 }
 .destacados{
-    height: 100px;
-    width: 500px;
+    height: auto;
+    width: 300px;
     margin: 50px;
     border: 3px solid;
     text-align: start;
     padding: 20px;
+    border-radius: 20px;
 }
 .reputacion{
     padding: 5px;
     background-color: #fffece;
     cursor: pointer;
+}
+.logo {
+    height: 90px;
+    width: auto;
+    background-color: #211931;  
+    filter: brightness(1.05) contrast(1.1);
+}
+nav a{
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    margin: 0 15px; 
+}
+.logoNav{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.destacados h2{
+    text-align: center;
+}
+.destacados ul{
+    list-style: none;
+    padding: 0;
+    text-align: center;
 }
