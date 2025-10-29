@@ -14,32 +14,37 @@
             </a>
             <h1>Mente Libre</h1>
         </div>
-        <input type="search" placeholder="🔍 Buscar Posts" style="max-width: 400px;">
+        <input type="search" id="searchInput" placeholder="🔍 Buscar posts..." style="max-width: 400px;">
         <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
             <a href="index.html">Inicio</a>
             <a href="perfil.html" id="perfilLink" style="display: none;">Perfil</a>
+            <a href="admin.html" id="adminLink" style="display: none;">Admin</a>
             <button id="authButton" onclick="handleAuth()">Iniciar sesión</button>
         </div>
     </nav>
 
     <div class="contenedor-foro">
-        <div class="post-list-container">
-            <div id="createPostSection" style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                 <h2>Crear Nueva Publicación</h2>
-                 <div id="error-message-post" class="error-message" style="display: none;"></div>
-                 <div id="success-message-post" class="success-message" style="display: none;"></div>
-                 <form id="newPostForm">
-                     <div class="grupo">
-                         <label for="newPostContent">Tu mensaje:</label>
-                         <textarea id="newPostContent" name="content" rows="4" placeholder="Comparte tus pensamientos aquí..." required maxlength="250"></textarea>
-                         <small>Máximo 250 caracteres.</small>
-                     </div>
-                     <button type="submit" class="btn-primary">Publicar</button>
-                 </form>
+        <div class="post-list-container" style="flex: 1;">
+            <div id="createPostSection" style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none;">
+                <h2>Crear Nueva Publicación</h2>
+                <div id="error-message-post" class="error-message"></div>
+                <div id="success-message-post" class="success-message"></div>
+                <form id="newPostForm" onsubmit="return handleCrearPost(event)">
+                    <div class="grupo">
+                        <label for="newPostTitle">Título (opcional):</label>
+                        <input type="text" id="newPostTitle" name="title" maxlength="50" placeholder="Título del post">
+                    </div>
+                    <div class="grupo">
+                        <label for="newPostContent">Tu mensaje:</label>
+                        <textarea id="newPostContent" name="content" rows="4" placeholder="Comparte tus pensamientos aquí..." required maxlength="250"></textarea>
+                        <small id="charCount">0 / 250 caracteres</small>
+                    </div>
+                    <button type="submit" class="btn-primary">Publicar</button>
+                </form>
             </div>
 
             <div class="post-list" id="postList">
-                 <p>Cargando posts...</p>
+                <p>Cargando posts...</p>
             </div>
         </div>
 
@@ -55,7 +60,7 @@
                         </div>
                     </div>
                 </li>
-                 <li>
+                <li>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="font-size: 2rem;">👤</span>
                         <div>
@@ -68,61 +73,63 @@
         </aside>
     </div>
 
+    <div id="modal-comentarios" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalComentarios()">&times;</span>
+            <h2 id="modal-title">Comentarios</h2>
+            <div id="comentarios-list"></div>
+            <div id="form-comentario" style="margin-top: 20px; display: none;">
+                <textarea id="nuevo-comentario" rows="3" placeholder="Escribe un comentario..." maxlength="250"></textarea>
+                <button onclick="agregarComentario()">Comentar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-editar-post" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalEditar()">&times;</span>
+            <h2>Editar Post</h2>
+            <form id="form-editar-post" onsubmit="return submitEditarPost(event)">
+                <div class="grupo">
+                    <label for="edit-title">Título:</label>
+                    <input type="text" id="edit-title" maxlength="50">
+                </div>
+                <div class="grupo">
+                    <label for="edit-content">Contenido:</label>
+                    <textarea id="edit-content" rows="4" maxlength="250" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-reportar" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalReportar()">&times;</span>
+            <h2>Reportar Usuario</h2>
+            <form id="form-reportar" onsubmit="return submitReporte(event)">
+                <div class="grupo">
+                    <label for="report-reason">Motivo:</label>
+                    <select id="report-reason" required>
+                        <option value="">Selecciona un motivo</option>
+                        <option value="ACOSO">Acoso</option>
+                        <option value="VIOLENCIA">Violencia</option>
+                        <option value="MAL_USO_DEL_FORO">Mal uso del foro</option>
+                        <option value="SPAM">Spam</option>
+                    </select>
+                </div>
+                <div class="grupo">
+                    <label for="report-description">Descripción:</label>
+                    <textarea id="report-description" rows="3" placeholder="Describe el problema..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Enviar Reporte</button>
+            </form>
+        </div>
+    </div>
+
     <script src="js/auth.js"></script>
+    <script src="js/comentarios.js"></script>
+    <script src="js/reportes.js"></script>
     <script src="js/foro.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const createPostSection = document.getElementById('createPostSection');
-            const userData = getUserData();
-            if (createPostSection) {
-                if (userData) {
-                    createPostSection.style.display = 'block';
-                } else {
-                    createPostSection.style.display = 'none';
-                }
-            }
-
-            const postErrorDiv = document.getElementById('error-message-post');
-            const postSuccessDiv = document.getElementById('success-message-post');
-
-            if(postErrorDiv) {
-                 window.showErrorPost = function(message) {
-                    postErrorDiv.textContent = message || 'Error al crear post.';
-                    postErrorDiv.style.display = 'block';
-                    setTimeout(() => { postErrorDiv.style.display = 'none'; }, 5000);
-                 }
-                 const postForm = document.getElementById('newPostForm');
-                 if(postForm) {
-                    
-                    postForm.addEventListener('submit', (e) => {
-                         window.originalShowError = window.showError;
-                         window.showError = window.showErrorPost;
-                        
-                         handleCrearPost(e).finally(() => {
-                             window.showError = window.originalShowError;
-                         });
-                    });
-                 }
-            }
-             if(postSuccessDiv) {
-                 window.showSuccessPost = function(message) {
-                     postSuccessDiv.textContent = message || 'Post creado.';
-                     postSuccessDiv.style.display = 'block';
-                     setTimeout(() => { postSuccessDiv.style.display = 'none'; }, 3000);
-                 }
-                  const postForm = document.getElementById('newPostForm');
-                  if(postForm) {
-                    
-                     postForm.addEventListener('submit', (e) => {
-                          window.originalShowSuccess = window.showSuccess;
-                          window.showSuccess = window.showSuccessPost;
-                          handleCrearPost(e).finally(() => {
-                              window.showSuccess = window.originalShowSuccess;
-                          });
-                     });
-                  }
-             }
-        });
-    </script>
 </body>
 </html>
