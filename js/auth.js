@@ -121,7 +121,6 @@ async function handleLogin(event) {
 
         const userResponse = await response.json();
 
-        localStorage.setItem('jwtToken', userResponse.token);
         const userData = {
             idUser: userResponse.idUser,
             userName: userResponse.userName,
@@ -145,7 +144,7 @@ async function handleLogin(event) {
 
 
 function getToken() {
-    return localStorage.getItem('jwtToken');
+    return null;
 }
 
 function getUserData() {
@@ -153,26 +152,29 @@ function getUserData() {
     return data ? JSON.parse(data) : null;
 }
 
-function cerrarSesion() {
-    localStorage.removeItem('jwtToken');
-    localStorage.removeItem('userData');
-    window.location.href = 'index.html';
+async function cerrarSesion() {
+    try {
+        await fetchAuth(`${API_BASE_URL}/auth/logout`, {
+            method: 'POST',
+        });
+    } catch (error) {
+        console.error("Error al cerrar sesión en el backend:", error);
+    } finally {
+        localStorage.removeItem('userData');
+        window.location.href = 'index.html';
+    }
 }
 
 async function fetchAuth(url, options = {}) {
-    const token = getToken();
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers,
     };
 
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
     try {
         const response = await fetch(url, {
             ...options,
+            credentials: 'include',
             headers: headers,
         });
 

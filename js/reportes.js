@@ -1,43 +1,23 @@
 let currentReportUserId = null;
 let currentReportPostId = null;
 
-function abrirModalReportar(postId, userName) {
-    const token = getToken();
-    if (!token) {
+function abrirModalReportar(postId, userName, userId) {
+    const userData = getUserData();
+    if (!userData) {
         alert('Debes iniciar sesión para reportar');
         window.location.href = 'login.html';
         return;
     }
+    
+    if (userData.idUser === userId) {
+        alert('No puedes reportarte a ti mismo');
+        return;
+    }
 
     currentReportPostId = postId;
+    currentReportUserId = userId;
     
-    fetch(`${API_BASE_URL}/posts/${postId}`)
-        .then(res => res.json())
-        .then(post => {
-            const userData = getUserData();
-            const autor = post.userName;
-            
-            if (userData.userName === autor) {
-                alert('No puedes reportarte a ti mismo');
-                return;
-            }
-
-            return fetch(`${API_BASE_URL}/posts`)
-                .then(res => res.json())
-                .then(posts => {
-                    const postEncontrado = posts.find(p => p.userName === autor);
-                    if (!postEncontrado) {
-                        throw new Error('No se pudo encontrar el usuario');
-                    }
-                    
-                    currentReportUserId = postEncontrado.idPost;
-                    document.getElementById('modal-reportar').style.display = 'block';
-                });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al preparar el reporte');
-        });
+    document.getElementById('modal-reportar').style.display = 'block';
 }
 
 function cerrarModalReportar() {

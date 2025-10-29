@@ -6,7 +6,7 @@ let currentReportPostId = null;
 
 async function darReconocimiento(button, postId) {
     const token = getToken();
-    if (!token) {
+    if (!token && !getUserData()) {
         showError('Debes iniciar sesión para dar reconocimiento.');
         return;
     }
@@ -105,7 +105,7 @@ async function cargarPosts() {
                         <h2>${post.userName} <span style="font-size: 0.9rem; color: #555;">(${post.userTitle || 'Usuario'})</span>${statusBadge}</h2>
                         ${post.title ? `<h3 style="color: #3c4fff; margin: 10px 0;">${post.title}</h3>` : ''}
                     </div>
-                    ${!isOwner ? `<button class="btn-report" onclick="abrirModalReportar(${post.idPost}, '${post.userName}')">🚩 Reportar</button>` : ''}
+                    ${!isOwner ? `<button class="btn-report" onclick="abrirModalReportar(${post.idPost}, '${post.userName}', ${post.userId})">🚩 Reportar</button>` : ''}
                 </div>
                 <p>${post.content}</p>
                 <p style="font-size: 0.8rem; color: #888;">Publicado: ${new Date(post.publicationDate).toLocaleString()}</p>
@@ -153,8 +153,8 @@ function escapeHtml(text) {
 
 async function handleCrearPost(event) {
     event.preventDefault();
-    const token = getToken();
-    if (!token) {
+    const userData = getUserData();
+    if (!userData) {
         alert("Debes iniciar sesión para crear un post.");
         return false;
     }

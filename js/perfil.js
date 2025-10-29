@@ -1,15 +1,16 @@
 function cargarPerfil() {
-    const usuarioActual = sessionStorage.getItem('usuarioActual');
+    const usuario = getUserData();
 
-    if (!usuarioActual) {
+    if (!usuario) {
         window.location.href = 'login.html';
         return;
     }
 
-    const usuario = JSON.parse(usuarioActual);
-
     document.getElementById('userName').textContent = usuario.nombre + ' ' + usuario.apellido;
     document.getElementById('userEmail').textContent = usuario.email;
+    document.getElementById('userKarmaTitle').textContent = usuario.karmaTitle || 'Cargando...';
+    document.getElementById('userReputacion').textContent = usuario.reputacion !== undefined ? usuario.reputacion : 'Cargando...';
+
     document.getElementById('userSessions').textContent = usuario.sesiones || 0;
 
     if (usuario.animo && usuario.animo.length > 0) {
@@ -18,21 +19,10 @@ function cargarPerfil() {
     } else {
         document.getElementById('userMood').textContent = 'Sin datos';
     }
-
-    const estados = ['Tranquilo', 'Optimista', 'Neutral', 'Ansioso', 'Reflexivo'];
-    const estadoAleatorio = estados[Math.floor(Math.random() * estados.length)];
-    document.getElementById('userStatus').textContent = estadoAleatorio;
 }
 
 function editarPerfil() {
     alert('Función de editar perfil próximamente disponible');
-}
-
-function cerrarSesion() {
-    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-        sessionStorage.removeItem('usuarioActual');
-        window.location.href = 'index.html';
-    }
 }
 
 window.addEventListener('DOMContentLoaded', cargarPerfil);
