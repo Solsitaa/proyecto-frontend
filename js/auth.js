@@ -1,7 +1,14 @@
+const API_BASE_URL = 'http://localhost:8080/api';
+
 function showError(message) {
     const errorDiv = document.getElementById('error-message');
     if (errorDiv) {
-        errorDiv.textContent = message;
+        try {
+            const errorObj = JSON.parse(message);
+            errorDiv.textContent = errorObj.error || Object.values(errorObj).join(', ') || 'Ocurrió un error.';
+        } catch (e) {
+            errorDiv.textContent = message || 'Ocurrió un error.';
+        }
         errorDiv.style.display = 'block';
         setTimeout(() => {
             errorDiv.style.display = 'none';
@@ -20,7 +27,7 @@ function showSuccess(message) {
     }
 }
 
-function handleRegistro(event) {
+async function handleRegistro(event) {
     event.preventDefault();
 
     const nombre = document.getElementById('nombre').value.trim();
@@ -34,84 +41,168 @@ function handleRegistro(event) {
         showError('Las contraseñas no coinciden');
         return false;
     }
-
     if (password.length < 6) {
         showError('La contraseña debe tener al menos 6 caracteres');
         return false;
     }
-
     if (userName.length < 4) {
         showError('El nombre de usuario debe tener al menos 4 caracteres');
         return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         showError('Por favor ingresa un correo válido');
         return false;
     }
 
-    const usuario = {
+    const registroData = {
+        userName: userName,
         nombre: nombre,
         apellido: apellido,
         email: email,
-        userName: userName,
         password: password,
-        fechaRegistro: new Date().toISOString(),
-        sesiones: 0,
-        animo: []
+        passwordConfirm: passwordConfirm
     };
 
-    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(registroData),
+        });
 
-    const usuarioExistente = usuarios.find(u => u.email === email || u.userName === userName);
-    if (usuarioExistente) {
-        showError('El correo o nombre de usuario ya están registrados');
-        return false;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        await response.json();
+
+        showSuccess('Registro exitoso. Serás redirigido al login.');
+
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error en el registro:', error);
+        showError(error.message);
     }
-
-    usuarios.push(usuario);
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-
-    showSuccess('Registro exitoso. Redirigiendo...');
-
-    setTimeout(() => {
-        window.location.href = 'login.html';
-    }, 2000);
 
     return false;
 }
 
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
 
     const identifier = document.getElementById('identifier').value.trim();
     const password = document.getElementById('password').value;
 
-    const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+    const loginData = {
+        identifier: identifier,
+        password: password
+    };
 
-    const usuario = usuarios.find(u => 
-        (u.email === identifier || u.userName === identifier) && u.password === password
-    );
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(loginData),
+        });
 
-    if (!usuario) {
-        showError('Usuario o contraseña incorrectos');
-        return false;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        const userResponse = await response.json();
+
+        localStorage.setItem('jwtToken', userResponse.token);
+        const userData = {
+            idUser: userResponse.idUser,
+            userName: userResponse.userName,
+            nombre: userResponse.nombre,
+            email: userResponse.email,
+            rol: userResponse.rol,
+            karmaTitle: userResponse.karmaTitle,
+            reputacion: userResponse.reputacion
+        };
+        localStorage.setItem('userData', JSON.stringify(userData));
+
+        window.location.href = 'index.html';
+
+    } catch (error) {
+        console.error('Error en el login:', error);
+        showError(error.message);
     }
-
-    sessionStorage.setItem('usuarioActual', JSON.stringify(usuario));
-
-    window.location.href = 'index.html';
 
     return false;
 }
 
-function verificarSesion() {
-    const usuarioActual = sessionStorage.getItem('usuarioActual');
-    return usuarioActual ? JSON.parse(usuarioActual) : null;
+
+function getToken() {
+    return localStorage.getItem('jwtToken');
+}
+
+function getUserData() {
+    const data = localStorage.getItem('userData');
+    return data ? JSON.parse(data) : null;
 }
 
 function cerrarSesion() {
-    sessionStorage.removeItem('usuarioActual');
+    localStorage.removeItem('jwtToken');
+    localStorage.removeItem('userData');
     window.location.href = 'index.html';
+}
+
+async function fetchAuth(url, options = {}) {
+    const token = getToken();
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers,
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            headers: headers,
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            cerrarSesion();
+            throw new Error('Sesión inválida o expirada. Por favor, inicia sesión de nuevo.');
+        }
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Error ${response.status}: ${response.statusText}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            return response.json();
+        } else {
+            try {
+                return await response.text();
+            } catch (e) {
+                return response;
+            }
+        }
+
+    } catch (error) {
+        console.error('Error en fetchAuth:', error);
+        if (error instanceof Error) {
+            throw error;
+        } else {
+            throw new Error('Error de conexión o de servidor.');
+        }
+    }
 }

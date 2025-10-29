@@ -14,12 +14,13 @@
             </a>
             <h1>Mente Libre</h1>
         </div>
-        <ul>
-            <li><a href="quienes-somos.html">Quiénes somos</a></li>
-            <li><a href="foro.html">Foro</a></li>
-            <li><a href="registro.html">Registrarse</a></li>
-            <li><a href="login.html">Iniciar sesión</a></li>
-        </ul>
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+             <a href="quienes-somos.html">Quiénes somos</a>
+             <a href="foro.html">Foro</a>
+             <a href="perfil.html" id="perfilLinkNav" style="display: none;">Perfil</a>
+             <a href="registro.html" id="registroLinkNav">Registrarse</a>
+             <button id="authButtonNav" onclick="handleAuthNav()">Iniciar sesión</button>
+        </div>
     </nav>
 
     <div class="contenedor-principal">
@@ -88,5 +89,39 @@
             <a href="quienes-somos.html">Quiénes somos</a>
         </div>
     </footer>
+
+    <script src="js/auth.js"></script>
+    <script>
+        function handleAuthNav() {
+            const userData = getUserData();
+            if (userData) {
+                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                    cerrarSesion();
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function actualizarNavIndex() {
+            const authButtonNav = document.getElementById('authButtonNav');
+            const perfilLinkNav = document.getElementById('perfilLinkNav');
+            const registroLinkNav = document.getElementById('registroLinkNav');
+            const userData = getUserData();
+
+            if (authButtonNav) {
+                if (userData) {
+                    authButtonNav.textContent = 'Cerrar sesión';
+                    if (perfilLinkNav) perfilLinkNav.style.display = 'inline';
+                    if (registroLinkNav) registroLinkNav.style.display = 'none';
+                } else {
+                    authButtonNav.textContent = 'Iniciar sesión';
+                    if (perfilLinkNav) perfilLinkNav.style.display = 'none';
+                    if (registroLinkNav) registroLinkNav.style.display = 'inline';
+                }
+            }
+        }
+        window.addEventListener('DOMContentLoaded', actualizarNavIndex);
+    </script>
 </body>
 </html>

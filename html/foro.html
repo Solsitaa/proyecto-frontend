@@ -14,32 +14,32 @@
             </a>
             <h1>Mente Libre</h1>
         </div>
-        <input type="search" placeholder="🔍 Buscar" style="max-width: 400px;">
+        <input type="search" placeholder="🔍 Buscar Posts" style="max-width: 400px;">
         <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
             <a href="index.html">Inicio</a>
-            <a href="perfil.html">Perfil</a>
+            <a href="perfil.html" id="perfilLink" style="display: none;">Perfil</a>
             <button id="authButton" onclick="handleAuth()">Iniciar sesión</button>
         </div>
     </nav>
 
     <div class="contenedor-foro">
-        <div class="post-list" id="postList">
-            <div class="post-card">
-                <h2>Usuario Anónimo</h2>
-                <p>Hoy quiero compartir que después de varias semanas de terapia, finalmente siento que estoy avanzando. No es fácil, pero cada día es un paso adelante. Gracias a todos por su apoyo.</p>
-                <button class="reputacion" onclick="darReconocimiento(this)">👍 Dar Reconocimiento</button>
+        <div class="post-list-container">
+            <div id="createPostSection" style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                 <h2>Crear Nueva Publicación</h2>
+                 <div id="error-message-post" class="error-message" style="display: none;"></div>
+                 <div id="success-message-post" class="success-message" style="display: none;"></div>
+                 <form id="newPostForm">
+                     <div class="grupo">
+                         <label for="newPostContent">Tu mensaje:</label>
+                         <textarea id="newPostContent" name="content" rows="4" placeholder="Comparte tus pensamientos aquí..." required maxlength="250"></textarea>
+                         <small>Máximo 250 caracteres.</small>
+                     </div>
+                     <button type="submit" class="btn-primary">Publicar</button>
+                 </form>
             </div>
 
-            <div class="post-card">
-                <h2>Usuario Anónimo</h2>
-                <p>¿Alguien más ha experimentado ansiedad al intentar retomar actividades sociales? Me gustaría saber cómo lo han manejado.</p>
-                <button class="reputacion" onclick="darReconocimiento(this)">👍 Dar Reconocimiento</button>
-            </div>
-
-            <div class="post-card">
-                <h2>Usuario Anónimo</h2>
-                <p>Quiero agradecer a esta comunidad. Cuando me sentía solo, encontré aquí palabras de aliento que realmente marcaron la diferencia. No están solos, sigamos apoyándonos.</p>
-                <button class="reputacion" onclick="darReconocimiento(this)">👍 Dar Reconocimiento</button>
+            <div class="post-list" id="postList">
+                 <p>Cargando posts...</p>
             </div>
         </div>
 
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                 </li>
-                <li>
+                 <li>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="font-size: 2rem;">👤</span>
                         <div>
@@ -64,28 +64,65 @@
                         </div>
                     </div>
                 </li>
-                <li>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 2rem;">👤</span>
-                        <div>
-                            <strong>Usuario 3</strong>
-                            <p style="font-size: 0.85rem; color: #666; margin: 0;">87 reconocimientos</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 2rem;">👤</span>
-                        <div>
-                            <strong>Usuario 4</strong>
-                            <p style="font-size: 0.85rem; color: #666; margin: 0;">76 reconocimientos</p>
-                        </div>
-                    </div>
-                </li>
             </ul>
         </aside>
     </div>
 
+    <script src="js/auth.js"></script>
     <script src="js/foro.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const createPostSection = document.getElementById('createPostSection');
+            const userData = getUserData();
+            if (createPostSection) {
+                if (userData) {
+                    createPostSection.style.display = 'block';
+                } else {
+                    createPostSection.style.display = 'none';
+                }
+            }
+
+            const postErrorDiv = document.getElementById('error-message-post');
+            const postSuccessDiv = document.getElementById('success-message-post');
+
+            if(postErrorDiv) {
+                 window.showErrorPost = function(message) {
+                    postErrorDiv.textContent = message || 'Error al crear post.';
+                    postErrorDiv.style.display = 'block';
+                    setTimeout(() => { postErrorDiv.style.display = 'none'; }, 5000);
+                 }
+                 const postForm = document.getElementById('newPostForm');
+                 if(postForm) {
+                    
+                    postForm.addEventListener('submit', (e) => {
+                         window.originalShowError = window.showError;
+                         window.showError = window.showErrorPost;
+                        
+                         handleCrearPost(e).finally(() => {
+                             window.showError = window.originalShowError;
+                         });
+                    });
+                 }
+            }
+             if(postSuccessDiv) {
+                 window.showSuccessPost = function(message) {
+                     postSuccessDiv.textContent = message || 'Post creado.';
+                     postSuccessDiv.style.display = 'block';
+                     setTimeout(() => { postSuccessDiv.style.display = 'none'; }, 3000);
+                 }
+                  const postForm = document.getElementById('newPostForm');
+                  if(postForm) {
+                    
+                     postForm.addEventListener('submit', (e) => {
+                          window.originalShowSuccess = window.showSuccess;
+                          window.showSuccess = window.showSuccessPost;
+                          handleCrearPost(e).finally(() => {
+                              window.showSuccess = window.originalShowSuccess;
+                          });
+                     });
+                  }
+             }
+        });
+    </script>
 </body>
 </html>

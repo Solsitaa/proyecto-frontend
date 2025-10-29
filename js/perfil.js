@@ -1,37 +1,36 @@
 function cargarPerfil() {
-    const usuarioActual = sessionStorage.getItem('usuarioActual');
+    const userData = getUserData();
 
-    if (!usuarioActual) {
+    if (!userData) {
         window.location.href = 'login.html';
         return;
     }
 
-    const usuario = JSON.parse(usuarioActual);
+    document.getElementById('userName').textContent = userData.nombre ? `${userData.nombre} (${userData.userName})` : userData.userName;
+    document.getElementById('userEmail').textContent = userData.email || 'No disponible';
+    document.getElementById('userKarmaTitle').textContent = userData.karmaTitle || 'Usuario';
+    document.getElementById('userReputacion').textContent = userData.reputacion !== null ? userData.reputacion.toFixed(1) : '0.0';
 
-    document.getElementById('userName').textContent = usuario.nombre + ' ' + usuario.apellido;
-    document.getElementById('userEmail').textContent = usuario.email;
-    document.getElementById('userSessions').textContent = usuario.sesiones || 0;
+    const sessionsElement = document.getElementById('userSessions');
+    const moodElement = document.getElementById('userMood');
+    const statsDiv = document.querySelector('.estadisticas');
 
-    if (usuario.animo && usuario.animo.length > 0) {
-        const promedioAnimo = (usuario.animo.reduce((a, b) => a + b, 0) / usuario.animo.length).toFixed(1);
-        document.getElementById('userMood').textContent = promedioAnimo + ' / 10';
-    } else {
-        document.getElementById('userMood').textContent = 'Sin datos';
+    if (sessionsElement) sessionsElement.closest('div').style.display = 'none';
+    if (moodElement) moodElement.closest('div').style.display = 'none';
+
+    // Ocultar div de estadísticas si ambos elementos hijos fueron ocultados
+    if (statsDiv && sessionsElement && moodElement) {
+         statsDiv.style.display = 'none';
     }
-
-    const estados = ['Tranquilo', 'Optimista', 'Neutral', 'Ansioso', 'Reflexivo'];
-    const estadoAleatorio = estados[Math.floor(Math.random() * estados.length)];
-    document.getElementById('userStatus').textContent = estadoAleatorio;
 }
 
 function editarPerfil() {
     alert('Función de editar perfil próximamente disponible');
 }
 
-function cerrarSesion() {
-    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-        sessionStorage.removeItem('usuarioActual');
-        window.location.href = 'index.html';
+function handleCerrarSesion() {
+     if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+        cerrarSesion();
     }
 }
 

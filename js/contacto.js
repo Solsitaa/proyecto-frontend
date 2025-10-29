@@ -13,14 +13,14 @@ function handleContacto(event) {
         mensaje: mensaje,
         fecha: new Date().toISOString()
     };
-
+    
     const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
     contactos.push(contacto);
     localStorage.setItem('contactos', JSON.stringify(contactos));
 
     const successDiv = document.getElementById('success-message');
     if (successDiv) {
-        successDiv.textContent = '¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.';
+        successDiv.textContent = '¡Mensaje enviado exitosamente! (Guardado localmente).';
         successDiv.style.display = 'block';
     }
 
