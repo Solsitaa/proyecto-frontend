@@ -1,35 +1,43 @@
-<%-- perfil.jsp --%>
-<%@ page import="com.tuapp.modelo.User" %><--EDITAR ESTO-->
-<%
-    User usuario = (User) session.getAttribute("usuario");
-    if (usuario == null) {
-        response.sendRedirect("login.html");
-        return;
-    }
-%>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil - <%= usuario.getNombre() %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mente Libre - Perfil de Usuario</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="contenedor">
-        <h1>Mi Perfil</h1>
-        
-        <div class="info-usuario">
-            <p><strong>Nombre:</strong> <%= usuario.getNombre() %></p>
-            <p><strong>Email:</strong> <%= usuario.getEmail() %></p>
-            <p><strong>ID:</strong> <%= usuario.getId() %></p>
+    <header>
+        🧠 Mente Libre
+    </header>
+
+    <section class="perfil-usuario">
+        <img src="https://via.placeholder.com/150" alt="Foto de usuario" id="userAvatar">
+        <h2 id="userName">Usuario</h2>
+        <p id="userEmail">correo@ejemplo.com</p>
+        <p>Estado actual: <strong id="userStatus">Tranquilo</strong></p>
+
+        <div class="estadisticas">
+            <div>
+                <h3 id="userSessions">0</h3>
+                <span>Sesiones</span>
+            </div>
+            <div>
+                <h3 id="userMood">-</h3>
+                <span>Ánimo promedio</span>
+            </div>
         </div>
-        
-        <div class="botones">
-            <a href="editar-perfil.jsp" class="btn">Editar Perfil</a>
-            <a href="cambiar-password.jsp" class="btn">Cambiar Contraseña</a>
-            <a href="dashboard.jsp" class="btn">Volver al Dashboard</a>
-            <a href="logout" class="btn btn-danger">Cerrar Sesión</a>
+
+        <div class="botones-perfil">
+            <button class="btn-primary" onclick="editarPerfil()">Editar Perfil</button>
+            <button class="btn-secondary" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
-    </div>
+
+        <div style="margin-top: 30px;">
+            <a href="index.html" style="color: #3c4fff; font-weight: bold;">← Volver al inicio</a>
+        </div>
+    </section>
+
+    <script src="js/perfil.js"></script>
 </body>
 </html>
