@@ -1,37 +1,60 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL_FORO = 'http://localhost:8080/api';
 
 let currentEditPostId = null;
 let currentReportUserId = null;
 let currentReportPostId = null;
 
 async function darReconocimiento(button, postId) {
-    const token = getToken();
-    if (!token && !getUserData()) {
-        showError('Debes iniciar sesión para dar reconocimiento.');
+    let userData;
+    try {
+        userData = await getCurrentUserData();
+        if (!userData) {
+            alert('Debes iniciar sesión para dar reconocimiento.');
+            return;
+        }
+    } catch (authError) {
+        alert('Debes iniciar sesión para dar reconocimiento.');
         return;
     }
+
 
     const originalText = button.textContent;
     button.disabled = true;
 
     try {
-        const responseText = await fetchAuth(`${API_BASE_URL}/posts/${postId}/vote?type=LIKE`, {
+        const responseText = await fetchAuth(`${API_BASE_URL_FORO}/posts/${postId}/vote?type=LIKE`, {
             method: 'POST'
         });
 
         button.textContent = `✓ ${responseText || 'Hecho'}`;
         button.style.backgroundColor = '#90EE90';
 
+        setTimeout(() => {
+            if(button) {
+                button.textContent = originalText;
+                button.style.backgroundColor = '';
+                button.disabled = false;
+            }
+        }, 2000);
+
+
     } catch (error) {
         console.error('Error al dar reconocimiento:', error);
-        alert(error.message || 'No se pudo registrar el voto.');
-        button.textContent = originalText;
-        button.disabled = false;
+        if (error.message === 'AUTH_REQUIRED') {
+            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'login.html';
+        } else {
+            alert(error.message || 'No se pudo registrar el voto.');
+        }
+        if(button) {
+            button.textContent = originalText;
+            button.disabled = false;
+        }
     }
 }
 
-function handleAuth() {
-    const userData = getUserData();
+async function handleAuth() {
+    const userData = await getCurrentUserData();
     if (userData) {
         if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
             cerrarSesion();
@@ -41,11 +64,11 @@ function handleAuth() {
     }
 }
 
-function actualizarBotonAuth() {
+function actualizarElementosUIAuth(userData) {
     const authButton = document.getElementById('authButton');
     const perfilLink = document.getElementById('perfilLink');
     const adminLink = document.getElementById('adminLink');
-    const userData = getUserData();
+    const createPostSection = document.getElementById('createPostSection');
 
     if (authButton) {
         if (userData) {
@@ -53,14 +76,20 @@ function actualizarBotonAuth() {
             if (perfilLink) perfilLink.style.display = 'inline';
             if (adminLink && userData.rol === 'ADMINISTRADOR') {
                 adminLink.style.display = 'inline';
+            } else if (adminLink) {
+                adminLink.style.display = 'none';
             }
+            if (createPostSection) createPostSection.style.display = 'block';
+
         } else {
             authButton.textContent = 'Iniciar sesión';
             if (perfilLink) perfilLink.style.display = 'none';
             if (adminLink) adminLink.style.display = 'none';
+            if (createPostSection) createPostSection.style.display = 'none';
         }
     }
 }
+
 
 async function cargarPosts() {
     const postListDiv = document.getElementById('postList');
@@ -68,8 +97,17 @@ async function cargarPosts() {
 
     postListDiv.innerHTML = '<p>Cargando posts...</p>';
 
+    let userData = null;
     try {
-        const response = await fetch(`${API_BASE_URL}/posts`);
+        userData = await getCurrentUserData();
+    } catch (e) {
+        console.log("Error al obtener datos de usuario para cargar posts, continuando como anónimo.");
+    }
+
+
+    try {
+
+        const response = await fetch(`${API_BASE_URL_FORO}/posts`);
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(errorText || `Error ${response.status}: ${response.statusText}`);
@@ -78,17 +116,28 @@ async function cargarPosts() {
 
         postListDiv.innerHTML = '';
 
+        if (!Array.isArray(posts)) {
+            console.error("La respuesta de /posts no es un array:", posts);
+            postListDiv.innerHTML = '<p style="color: red;">Error: Formato inesperado de datos.</p>';
+            return;
+        }
+
+
         if (posts.length === 0) {
             postListDiv.innerHTML = '<p>Aún no hay posts. ¡Sé el primero en crear uno!</p>';
             return;
         }
 
-        const userData = getUserData();
 
         posts.forEach(post => {
+            if (!post || typeof post !== 'object') {
+                console.warn("Elemento inválido en la lista de posts:", post);
+                return;
+            }
+
             const postCard = document.createElement('div');
             postCard.className = 'post-card';
-            
+
             let statusBadge = '';
             if (post.status === 'PENDIENTE') {
                 statusBadge = '<span style="font-size: 0.8rem; background-color: #ffecb3; color: #6d4c41; padding: 2px 5px; border-radius: 3px; margin-left: 10px;">⏳ Pendiente de aprobación</span>';
@@ -98,18 +147,19 @@ async function cargarPosts() {
 
             const isOwner = userData && userData.userName === post.userName;
             const canEdit = isOwner && post.status !== 'RECHAZADO';
+            const canReport = userData && !isOwner;
 
             postCard.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: start;">
                     <div>
-                        <h2>${post.userName} <span style="font-size: 0.9rem; color: #555;">(${post.userTitle || 'Usuario'})</span>${statusBadge}</h2>
-                        ${post.title ? `<h3 style="color: #3c4fff; margin: 10px 0;">${post.title}</h3>` : ''}
+                        <h2>${escapeHtml(post.userName || 'Anónimo')} <span style="font-size: 0.9rem; color: #555;">(${escapeHtml(post.userTitle || 'Usuario')})</span>${statusBadge}</h2>
+                        ${post.title ? `<h3 style="color: #3c4fff; margin: 10px 0;">${escapeHtml(post.title)}</h3>` : ''}
                     </div>
-                    ${!isOwner ? `<button class="btn-report" onclick="abrirModalReportar(${post.idPost}, '${post.userName}', ${post.userId})">🚩 Reportar</button>` : ''}
+                    ${canReport ? `<button class="btn-report" onclick="abrirModalReportar(${post.idPost}, '${escapeHtml(post.userName || '')}', ${post.userId})">🚩 Reportar</button>` : ''}
                 </div>
-                <p>${post.content}</p>
-                <p style="font-size: 0.8rem; color: #888;">Publicado: ${new Date(post.publicationDate).toLocaleString()}</p>
-                ${post.updateDate && new Date(post.updateDate).getTime() !== new Date(post.publicationDate).getTime()
+                <p>${escapeHtml(post.content || '')}</p>
+                <p style="font-size: 0.8rem; color: #888;">Publicado: ${post.publicationDate ? new Date(post.publicationDate).toLocaleString() : 'Fecha desconocida'}</p>
+                ${post.updateDate && post.publicationDate && new Date(post.updateDate).getTime() !== new Date(post.publicationDate).getTime()
                     ? `<p style="font-size: 0.8rem; color: #888;">Editado: ${new Date(post.updateDate).toLocaleString()}</p>`
                     : ''
                 }
@@ -117,19 +167,19 @@ async function cargarPosts() {
                     <button class="reputacion" onclick="darReconocimiento(this, ${post.idPost})">👍 Dar Reconocimiento</button>
                     <button class="btn-secondary" onclick="abrirModalComentarios(${post.idPost})">💬 Comentarios</button>
                     ${canEdit ? `
-                        <button class="btn-primary" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content)}')">✏️ Editar</button>
+                        <button class="btn-primary" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
                         <button class="btn-danger" onclick="eliminarPost(${post.idPost})">🗑️ Eliminar</button>
                     ` : ''}
                 </div>
             `;
-            
-            if (post.status === 'APROBADO' || (userData && userData.userName === post.userName)) {
+
+            if (post.status === 'APROBADO' || isOwner) {
                 postListDiv.appendChild(postCard);
             }
         });
 
         if (postListDiv.innerHTML === '') {
-            postListDiv.innerHTML = '<p>No hay posts aprobados para mostrar.</p>';
+            postListDiv.innerHTML = '<p>No hay posts aprobados para mostrar, o tus posts están pendientes.</p>';
         }
 
     } catch (error) {
@@ -139,99 +189,132 @@ async function cargarPosts() {
 }
 
 function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
     const map = {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
         "'": '&#039;',
-        '\n': ' ',
-        '\r': ''
     };
-    return text.replace(/[&<>"'\n\r]/g, m => map[m]);
+    let safeText = String(text).replace(/&/g, '&amp;').replace(/[<>"']/g, m => map[m]);
+    safeText = safeText.replace(/\r?\n/g, ' ');
+    return safeText;
 }
+
 
 async function handleCrearPost(event) {
     event.preventDefault();
-    const userData = getUserData();
-    if (!userData) {
-        alert("Debes iniciar sesión para crear un post.");
+    let userData;
+    try {
+        userData = await getCurrentUserData();
+        if (!userData) {
+            alert("Debes iniciar sesión para crear un post.");
+            window.location.href = 'login.html';
+            return false;
+        }
+    } catch(authError) {
+        alert("Error al verificar sesión. Por favor, inicia sesión de nuevo.");
+        window.location.href = 'login.html';
         return false;
     }
 
-    const content = document.getElementById('newPostContent').value.trim();
-    const title = document.getElementById('newPostTitle').value.trim() || null;
+
+    const contentInput = document.getElementById('newPostContent');
+    const titleInput = document.getElementById('newPostTitle');
+    const content = contentInput ? contentInput.value.trim() : '';
+    const title = titleInput ? titleInput.value.trim() : null;
 
     if (!content) {
         alert("El contenido del post no puede estar vacío.");
         return false;
     }
 
-    const postData = { 
+    const postData = {
         content: content,
-        title: title
+        title: title || undefined
     };
 
     const submitButton = event.target.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.textContent = 'Publicando...';
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Publicando...';
+    }
+
 
     try {
-        await fetchAuth(`${API_BASE_URL}/posts`, {
+        await fetchAuth(`${API_BASE_URL_FORO}/posts`, {
             method: 'POST',
             body: JSON.stringify(postData)
         });
 
-        document.getElementById('newPostForm').reset();
-        document.getElementById('charCount').textContent = '0 / 250 caracteres';
-        
+        const form = document.getElementById('newPostForm');
+        if (form) form.reset();
+        const charCount = document.getElementById('charCount');
+        if (charCount) charCount.textContent = '0 / 250 caracteres';
+
         const successDiv = document.getElementById('success-message-post');
         if (successDiv) {
             successDiv.textContent = "Post creado exitosamente. Puede requerir aprobación.";
             successDiv.style.display = 'block';
             setTimeout(() => {
-                successDiv.style.display = 'none';
+                if (successDiv) successDiv.style.display = 'none';
             }, 3000);
         }
 
-        cargarPosts();
+        await cargarPosts();
 
     } catch (error) {
         console.error('Error al crear post:', error);
         const errorDiv = document.getElementById('error-message-post');
         if (errorDiv) {
-            errorDiv.textContent = error.message || "No se pudo crear el post.";
+            if (error.message === 'AUTH_REQUIRED') {
+                errorDiv.textContent = 'Tu sesión ha expirado. Por favor, inicia sesión de nuevo.';
+                window.location.href = 'login.html';
+            } else {
+                errorDiv.textContent = error.message || "No se pudo crear el post.";
+            }
             errorDiv.style.display = 'block';
             setTimeout(() => {
-                errorDiv.style.display = 'none';
+                if (errorDiv) errorDiv.style.display = 'none';
             }, 5000);
         }
     } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Publicar';
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Publicar';
+        }
     }
     return false;
 }
 
 function abrirModalEditar(postId, title, content) {
     currentEditPostId = postId;
-    document.getElementById('edit-title').value = title || '';
-    document.getElementById('edit-content').value = content || '';
-    document.getElementById('modal-editar-post').style.display = 'block';
+    const editTitle = document.getElementById('edit-title');
+    const editContent = document.getElementById('edit-content');
+    if (editTitle) editTitle.value = title || '';
+    if (editContent) editContent.value = content || '';
+
+    const modal = document.getElementById('modal-editar-post');
+    if (modal) modal.style.display = 'block';
 }
 
 function cerrarModalEditar() {
-    document.getElementById('modal-editar-post').style.display = 'none';
+    const modal = document.getElementById('modal-editar-post');
+    if (modal) modal.style.display = 'none';
     currentEditPostId = null;
 }
 
 async function submitEditarPost(event) {
     event.preventDefault();
-    
+
     if (!currentEditPostId) return false;
 
-    const title = document.getElementById('edit-title').value.trim() || null;
-    const content = document.getElementById('edit-content').value.trim();
+    const titleInput = document.getElementById('edit-title');
+    const contentInput = document.getElementById('edit-content');
+    const title = titleInput ? titleInput.value.trim() : null;
+    const content = contentInput ? contentInput.value.trim() : '';
+
 
     if (!content) {
         alert('El contenido no puede estar vacío');
@@ -239,18 +322,23 @@ async function submitEditarPost(event) {
     }
 
     try {
-        await fetchAuth(`${API_BASE_URL}/posts/${currentEditPostId}`, {
+        await fetchAuth(`${API_BASE_URL_FORO}/posts/${currentEditPostId}`, {
             method: 'PUT',
-            body: JSON.stringify({ title, content })
+            body: JSON.stringify({ title: title || undefined, content })
         });
 
-        alert('Post actualizado exitosamente');
+        alert('Post actualizado exitosamente. Puede requerir re-aprobación.');
         cerrarModalEditar();
-        cargarPosts();
+        await cargarPosts();
 
     } catch (error) {
         console.error('Error al actualizar post:', error);
-        alert(error.message || 'No se pudo actualizar el post');
+        if (error.message === 'AUTH_REQUIRED') {
+            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'login.html';
+        } else {
+            alert(error.message || 'No se pudo actualizar el post');
+        }
     }
 
     return false;
@@ -262,34 +350,43 @@ async function eliminarPost(postId) {
     }
 
     try {
-        await fetchAuth(`${API_BASE_URL}/posts/${postId}`, {
+        await fetchAuth(`${API_BASE_URL_FORO}/posts/${postId}`, {
             method: 'DELETE'
         });
 
         alert('Post eliminado correctamente');
-        cargarPosts();
+        await cargarPosts();
 
     } catch (error) {
         console.error('Error al eliminar post:', error);
-        alert(error.message || 'No se pudo eliminar el post');
+        if (error.message === 'AUTH_REQUIRED') {
+            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'login.html';
+        } else {
+            alert(error.message || 'No se pudo eliminar el post');
+        }
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    actualizarBotonAuth();
-    cargarPosts();
+document.addEventListener('DOMContentLoaded', () => {
 
-    const createPostSection = document.getElementById('createPostSection');
-    const userData = getUserData();
-    if (createPostSection && userData) {
-        createPostSection.style.display = 'block';
-    }
+    onAuthStatusChecked((loggedIn, userData) => {
+        actualizarElementosUIAuth(userData);
+
+    });
+
+    cargarPosts();
 
     const contentTextarea = document.getElementById('newPostContent');
     const charCount = document.getElementById('charCount');
     if (contentTextarea && charCount) {
         contentTextarea.addEventListener('input', () => {
-            charCount.textContent = `${contentTextarea.value.length} / 250 caracteres`;
+            const length = contentTextarea.value.length;
+            charCount.textContent = `${length} / 250 caracteres`;
+            if (length > 250) {
+                contentTextarea.value = contentTextarea.value.substring(0, 250);
+                charCount.textContent = `250 / 250 caracteres`;
+            }
         });
     }
 
@@ -299,10 +396,14 @@ window.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                const searchTerm = e.target.value.toLowerCase();
-                const posts = document.querySelectorAll('.post-card');
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const posts = document.querySelectorAll('#postList .post-card');
 
                 posts.forEach(post => {
+                    if (!searchTerm) {
+                        post.style.display = 'block';
+                        return;
+                    }
                     const text = post.textContent.toLowerCase();
                     if (text.includes(searchTerm)) {
                         post.style.display = 'block';
@@ -318,7 +419,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const modalEditar = document.getElementById('modal-editar-post');
         const modalComentarios = document.getElementById('modal-comentarios');
         const modalReportar = document.getElementById('modal-reportar');
-        
+
         if (event.target == modalEditar) {
             cerrarModalEditar();
         }

@@ -1,48 +1,73 @@
-let currentReportUserId = null;
-let currentReportPostId = null;
+let currentReportUserIdReportes = null;
+let currentReportPostIdReportes = null;
 
-function abrirModalReportar(postId, userName, userId) {
-    const userData = getUserData();
-    if (!userData) {
-        alert('Debes iniciar sesión para reportar');
+async function abrirModalReportar(postId, userName, userId) {
+    let userData;
+    try {
+        userData = await getCurrentUserData();
+        if (!userData) {
+            alert('Debes iniciar sesión para reportar');
+            window.location.href = 'login.html';
+            return;
+        }
+    } catch {
+        alert('Error al verificar sesión. Intenta iniciar sesión.');
         window.location.href = 'login.html';
         return;
     }
-    
+
+
     if (userData.idUser === userId) {
         alert('No puedes reportarte a ti mismo');
         return;
     }
 
-    currentReportPostId = postId;
-    currentReportUserId = userId;
-    
-    document.getElementById('modal-reportar').style.display = 'block';
+    currentReportPostIdReportes = postId;
+    currentReportUserIdReportes = userId;
+
+    const modal = document.getElementById('modal-reportar');
+    if (modal) modal.style.display = 'block';
 }
 
 function cerrarModalReportar() {
-    document.getElementById('modal-reportar').style.display = 'none';
-    document.getElementById('form-reportar').reset();
-    currentReportUserId = null;
-    currentReportPostId = null;
+    const modal = document.getElementById('modal-reportar');
+    if (modal) modal.style.display = 'none';
+    const form = document.getElementById('form-reportar');
+    if (form) form.reset();
+    currentReportUserIdReportes = null;
+    currentReportPostIdReportes = null;
 }
 
 async function submitReporte(event) {
     event.preventDefault();
 
-    const reason = document.getElementById('report-reason').value;
-    const description = document.getElementById('report-description').value.trim();
+    const reasonSelect = document.getElementById('report-reason');
+    const descriptionTextarea = document.getElementById('report-description');
 
-    if (!reason || !description) {
-        alert('Debes completar todos los campos');
+    const reason = reasonSelect ? reasonSelect.value : '';
+    const description = descriptionTextarea ? descriptionTextarea.value.trim() : '';
+
+    if (!reason) {
+        alert('Debes seleccionar un motivo');
+        return false;
+    }
+    if (!description) {
+        alert('Debes incluir una descripción');
         return false;
     }
 
+
+    if (!currentReportUserIdReportes) {
+        alert("Error: No se ha identificado al usuario a reportar.");
+        return false;
+    }
+
+
     const reportData = {
-        reportedUserId: currentReportUserId,
+        reportedUserId: currentReportUserIdReportes,
         reason: reason,
         description: description,
-        relatedPostId: currentReportPostId,
+        relatedPostId: currentReportPostIdReportes,
         relatedCommentId: null
     };
 
@@ -57,7 +82,12 @@ async function submitReporte(event) {
 
     } catch (error) {
         console.error('Error al enviar reporte:', error);
-        alert(error.message || 'No se pudo enviar el reporte');
+        if (error.message === 'AUTH_REQUIRED') {
+            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'login.html';
+        } else {
+            alert(error.message || 'No se pudo enviar el reporte');
+        }
     }
 
     return false;

@@ -90,38 +90,48 @@
         </div>
     </footer>
 
-    <script src="js/auth.js"></script>
+    <script src="../js/auth.js"></script>
     <script>
-        function handleAuthNav() {
-            const userData = getUserData();
-            if (userData) {
-                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                    cerrarSesion();
-                }
-            } else {
-                window.location.href = 'login.html';
-            }
-        }
-
-        function actualizarNavIndex() {
-            const authButtonNav = document.getElementById('authButtonNav');
+         function actualizarNavIndex(loggedIn, userData) {
             const perfilLinkNav = document.getElementById('perfilLinkNav');
             const registroLinkNav = document.getElementById('registroLinkNav');
-            const userData = getUserData();
+            const loginLinkNav = document.getElementById('loginLinkNav');
+            const navDiv = loginLinkNav ? loginLinkNav.parentElement : null;
+            let logoutLink = document.getElementById('logoutLinkNav');
 
-            if (authButtonNav) {
-                if (userData) {
-                    authButtonNav.textContent = 'Cerrar sesión';
-                    if (perfilLinkNav) perfilLinkNav.style.display = 'inline';
-                    if (registroLinkNav) registroLinkNav.style.display = 'none';
-                } else {
-                    authButtonNav.textContent = 'Iniciar sesión';
-                    if (perfilLinkNav) perfilLinkNav.style.display = 'none';
-                    if (registroLinkNav) registroLinkNav.style.display = 'inline';
+            if (loggedIn && userData) {
+                if (perfilLinkNav) perfilLinkNav.style.display = 'inline';
+                if (registroLinkNav) registroLinkNav.style.display = 'none';
+                if (loginLinkNav) loginLinkNav.style.display = 'none';
+
+                if (!logoutLink && navDiv) {
+                    logoutLink = document.createElement('a');
+                    logoutLink.href = '#';
+                    logoutLink.id = 'logoutLinkNav';
+                    logoutLink.textContent = 'Cerrar Sesión';
+                    logoutLink.onclick = function(event) {
+                        event.preventDefault();
+                        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                            cerrarSesion();
+                        }
+                    };
+                    logoutLink.style.cursor = 'pointer';
+                    logoutLink.style.color = 'white';
+                     logoutLink.style.fontSize = '18px';
+                    navDiv.appendChild(logoutLink);
+                } else if (logoutLink) {
+                   logoutLink.style.display = 'inline';
                 }
+
+            } else {
+                if (perfilLinkNav) perfilLinkNav.style.display = 'none';
+                if (registroLinkNav) registroLinkNav.style.display = 'inline';
+                if (loginLinkNav) loginLinkNav.style.display = 'inline';
+                if (logoutLink) logoutLink.style.display = 'none';
             }
         }
-        window.addEventListener('DOMContentLoaded', actualizarNavIndex);
+
+        onAuthStatusChecked(actualizarNavIndex);
     </script>
 </body>
 </html>
