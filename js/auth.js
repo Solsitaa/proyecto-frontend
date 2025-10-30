@@ -46,10 +46,10 @@ async function fetchAuth(url, options = {}) {
         if (response.status === 401 || response.status === 403) {
             currentUserData = null;
             userDataPromise = null;
-             if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('registro.html')) {
-                 console.warn('AUTH_REQUIRED detectado por fetchAuth.');
-             }
-             throw new Error('AUTH_REQUIRED');
+            if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('registro.html')) {
+                console.warn('AUTH_REQUIRED detectado por fetchAuth.');
+            }
+            throw new Error('AUTH_REQUIRED');
         }
 
         if (!response.ok) {
@@ -59,26 +59,25 @@ async function fetchAuth(url, options = {}) {
 
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.indexOf("application/json") !== -1) {
-             try {
+            try {
                 return await response.json();
             } catch (e) {
                 console.error("Error parsing JSON:", e);
                 return null;
             }
         } else {
-             const text = await response.text();
-             return text || response;
+            const text = await response.text();
+            return text || response;
         }
 
     } catch (error) {
         console.error('Error en fetchAuth:', error);
-         if (error.message === 'AUTH_REQUIRED') {
+        if (error.message === 'AUTH_REQUIRED') {
             throw error;
         }
         throw new Error(error.message || 'Error de conexión o de servidor.');
     }
 }
-
 
 async function handleRegistro(event) {
     event.preventDefault();
@@ -90,7 +89,7 @@ async function handleRegistro(event) {
     const password = document.getElementById('password')?.value;
     const passwordConfirm = document.getElementById('passwordConfirm')?.value;
 
-     if (!nombre || !apellido || !email || !userName || !password || !passwordConfirm) {
+    if (!nombre || !apellido || !email || !userName || !password || !passwordConfirm) {
         showError('Todos los campos son obligatorios.');
         return;
     }
@@ -152,7 +151,6 @@ async function handleRegistro(event) {
     }
 }
 
-
 async function handleLogin(event) {
     event.preventDefault();
 
@@ -181,8 +179,8 @@ async function handleLogin(event) {
 
         if (!response.ok) {
             const errorText = await response.text();
-             currentUserData = null;
-             userDataPromise = null;
+            currentUserData = null;
+            userDataPromise = null;
             throw new Error(errorText || `Error ${response.status}: ${response.statusText}`);
         }
 
@@ -210,36 +208,30 @@ async function getCurrentUserData() {
         try {
             const userData = await fetchAuth(`${API_BASE_URL}/auth/me`);
             if (userData && typeof userData === 'object') {
-                 currentUserData = userData;
-                 return userData;
+                currentUserData = userData;
+                return userData;
             } else {
-                 console.log('/auth/me no devolvió datos de usuario válidos.');
-                 currentUserData = null;
-                 userDataPromise = null;
-                 return null;
+                currentUserData = null;
+                userDataPromise = null;
+                return null;
             }
         } catch (error) {
-            console.log('No se pudo obtener datos del usuario (/auth/me), asumiendo no logueado.', error.message);
             currentUserData = null;
-             userDataPromise = null;
+            userDataPromise = null;
             return null;
         }
     })();
     return userDataPromise;
 }
 
-
 async function cerrarSesion() {
     try {
         await fetchAuth(`${API_BASE_URL}/auth/logout`, {
             method: 'POST',
         });
-         console.log('Llamada a logout backend exitosa.');
     } catch (error) {
         if (error.message !== 'AUTH_REQUIRED') {
             console.error("Error al llamar a /auth/logout en el backend:", error);
-        } else {
-             console.log('Logout llamado sin sesión activa, continuando con la limpieza local.');
         }
     } finally {
         currentUserData = null;
@@ -256,17 +248,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
-       registerForm.addEventListener('submit', handleRegistro);
+        registerForm.addEventListener('submit', handleRegistro);
     }
 
-     getCurrentUserData().then(userData => {
+    getCurrentUserData().then(userData => {
         console.log("Estado de login inicial verificado:", userData ? "Logueado como " + userData.userName : "No logueado");
         document.dispatchEvent(new CustomEvent('authStatusChecked', { detail: { loggedIn: !!userData, userData: userData } }));
-     }).catch(() => {
-         document.dispatchEvent(new CustomEvent('authStatusChecked', { detail: { loggedIn: false, userData: null } }));
-     });
+    }).catch(() => {
+        document.dispatchEvent(new CustomEvent('authStatusChecked', { detail: { loggedIn: false, userData: null } }));
+    });
 });
-
 
 function onAuthStatusChecked(callback) {
     document.addEventListener('authStatusChecked', (event) => {
@@ -274,8 +265,8 @@ function onAuthStatusChecked(callback) {
     });
 
     if (userDataPromise !== null) {
-         getCurrentUserData().then(userData => {
-             callback(!!userData, userData);
-         });
+        getCurrentUserData().then(userData => {
+            callback(!!userData, userData);
+        });
     }
 }
