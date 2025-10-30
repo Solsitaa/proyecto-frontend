@@ -4,45 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foro</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/foro.css" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <header class="logoNav">
-            <a href="/html/index.html">
-                <img src="../imagenes/logo (2).png" class="logo" alt="Logo">
-            </a>
-                <h1>  Mente Libre </h1>
-            
-        </header>
-        <input type="text" placeholder="&#x1F50D;Buscar">
-        <div>
-            <a href="/html/CrearPost.html">Crear Post</a>
-            <a href="/html/MisPost.html">Mis Post</a>
-            <a href="/html/perfil.html">Perfil</a>
-            <a href="/html/login.html"><button id="init">iniciar sesion</button></a>
-            <a href="/html/login.html"></a><button id="register"> Registrarse</button></a>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color:#211931;">
+    <div class="container-fluid">
+        
+        <a class="navbar-brand d-flex align-items-center" href="/html/index.html">
+        <img src="../imagenes/logo (2).png" alt="Logo" height="50" class="me-2">
+        <span class="fw-bold">Mente Libre</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+        
+        <form class="d-flex mx-auto" style="width: 40%;">
+            <input class="form-control" type="search" placeholder="🔍 Buscar">
+        </form>
+
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/html/CrearPost.html">Crear Post</a></li>
+            <li class="nav-item"><a class="nav-link" href="/html/MisPost.html">Mis Post</a></li>
+            <li class="nav-item"><a class="nav-link" href="/html/perfil.html">Perfil</a></li>
+
+            <li class="nav-item">
+            <a href="/html/login.html" class="btn btn-primary btn-sm me-2">Iniciar sesión</a>
+            </li>
+            <li class="nav-item">
+            <a href="/html/login.html" class="btn btn-outline-light btn-sm">Registrarse</a>
+            </li>
+        </ul>
         </div>
+    </div>
     </nav>
 
     <div class="contenedor-foro">
         <div class="post-list" id="postList">
             <div class="post-card">
-                <h2>Usuario Anónimo</h2>
-                <p>Hoy quiero compartir que después de varias semanas de terapia, finalmente siento que estoy avanzando. No es fácil, pero cada día es un paso adelante. Gracias a todos por su apoyo.</p>
-                <button class="reputacion" onclick="darReconocimiento(this)">👍 Dar Reconocimiento</button>
+                <div class="container mt-4">
+                    <div class="card p-3 mb-3">
+                        <h5>Usuario Anónimo</h5>
+                        <p>Hoy quiero compartir que después de varias semanas de terapia, finalmente siento que estoy avanzando. No es fácil, pero cada día es un paso adelante. Gracias a todos por su apoyo.</p>
+                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
+                    </div>
+                </div>
             </div>
 
             <div class="post-card">
-                <h2>Usuario Anónimo</h2>
-                <p>¿Alguien más ha experimentado ansiedad al intentar retomar actividades sociales? Me gustaría saber cómo lo han manejado.</p>
-                <button class="reputacion" onclick="darReconocimiento(this)">👍 Dar Reconocimiento</button>
+                <div class="container mt-4">
+                    <div class="card p-3 mb-3">
+                        <h5>Usuario Anónimo</h5>
+                        <p>¿Alguien más ha experimentado ansiedad al intentar retomar actividades sociales? Me gustaría saber cómo lo han manejado.</p>
+                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
+                    </div>
+                </div>
             </div>
 
             <div class="post-card">
-                <h2>Usuario Anónimo</h2>
-                <p>Quiero agradecer a esta comunidad. Cuando me sentía solo, encontré aquí palabras de aliento que realmente marcaron la diferencia. No están solos, sigamos apoyándonos.</p>
-                <button class="reputacion" onclick="darReconocimiento(this)">👍 Dar Reconocimiento</button>
+                <div class="container mt-4">
+                    <div class="card p-3 mb-3">
+                        <h5>Usuario Anónimo</h5>
+                        <p>Quiero agradecer a esta comunidad. Cuando me sentía solo, encontré aquí palabras de aliento que realmente marcaron la diferencia. No están solos, sigamos apoyándonos.</p>
+                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
+                    </div>
+                </div>
+            </div>
+            <div class="post-card">
+                <div class="container mt-4">
+                    <div class="card p-3 mb-3">
+                        <h5>Usuario Anónimo</h5>
+                        <p>Contenido del post...</p>
+                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -88,6 +127,7 @@
             </ul>
         </aside>
     </div>
+
 
     <script src="js/foro.js"></script>
 </body>

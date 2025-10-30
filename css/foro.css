@@ -92,3 +92,10 @@ nav a{
     padding: 0;
     text-align: center;
 }
+.recon-btn{
+    width: 200px;
+    background-color: #fffece;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
