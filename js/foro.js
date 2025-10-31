@@ -34,6 +34,8 @@ async function handleVote(button, postId) {
         } else {
             button.classList.remove('voted');
         }
+        
+        await cargarTopUsers();
 
     } catch (error) {
         console.error('Error al votar:', error);

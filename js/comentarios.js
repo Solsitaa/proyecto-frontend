@@ -147,6 +147,8 @@ async function handleCommentVote(button, commentId) {
             button.classList.remove('voted');
         }
 
+        await cargarTopUsers();
+
     } catch (error) {
         console.error('Error al votar en comentario:', error);
         if (error.message === 'AUTH_REQUIRED') {
