@@ -63,6 +63,7 @@ function abrirModalEditarPerfil() {
     document.getElementById('edit-nombre').value = currentUser.nombre || '';
     document.getElementById('edit-apellido').value = currentUser.apellido || '';
     document.getElementById('edit-email').value = currentUser.email || '';
+    document.getElementById('edit-username').value = currentUser.userName || '';
     
     const avatarPreview = document.getElementById('edit-avatar-preview');
     avatarPreview.src = currentUser.avatarUrl || `https://robohash.org/${currentUser.userName}?set=set4`;
@@ -125,13 +126,20 @@ async function handleGuardarPerfil(event) {
     const email = document.getElementById('edit-email').value;
     const selectedTitle = document.getElementById('select-titulo').value;
     const avatarUrl = document.getElementById('edit-avatar-preview').src;
+    const userName = document.getElementById('edit-username').value.trim();
+
+    if (userName.length < 4) {
+        showErrorPerfil("El nombre de usuario debe tener al menos 4 caracteres.");
+        return false;
+    }
     
     const updateData = {
         nombre,
         apellido,
         email,
         selectedTitle,
-        avatarUrl
+        avatarUrl,
+        userName
     };
 
     const submitButton = event.target.querySelector('button[type="submit"]');
@@ -161,7 +169,6 @@ async function handleGuardarPerfil(event) {
         if (typeof actualizarElementosUIAuth === 'function') {
             actualizarElementosUIAuth(updatedUser);
         }
-
 
     } catch (error) {
         console.error("Error al guardar perfil:", error);
