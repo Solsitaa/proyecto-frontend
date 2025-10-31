@@ -491,15 +491,16 @@ label {
 
 .reputacion {
     padding: 8px 16px;
-    background-color: #fffece;
-    border: 1px solid #e0e0e0;
+    background-color: #e6e9ff;
+    border: 1px solid #cdd3ff;
+    color: #211931;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .reputacion:hover {
-    background-color: #fff4a3;
+    background-color: #cdd3ff;
     transform: scale(1.05);
 }
 

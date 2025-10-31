@@ -164,7 +164,7 @@ async function cargarPosts() {
                     : ''
                 }
                 <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                    <button class="reputacion" onclick="darReconocimiento(this, ${post.idPost})">👍 Dar Reconocimiento</button>
+                    ${canReport ? `<button class="reputacion" onclick="darReconocimiento(this, ${post.idPost})">👍 Dar Reconocimiento</button>` : ''}
                     <button class="btn-secondary" onclick="abrirModalComentarios(${post.idPost})">💬 Comentarios</button>
                     ${canEdit ? `
                         <button class="btn-primary" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
