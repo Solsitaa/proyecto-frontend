@@ -26,11 +26,23 @@ async function cargarPerfil() {
         
         currentUser = usuario;
 
+        const userName = usuario.userName || 'usuario';
         if (userNameEl) userNameEl.textContent = (usuario.nombre || '') + ' ' + (usuario.apellido || '');
         if (userEmailEl) userEmailEl.textContent = usuario.email || 'No disponible';
         if (userKarmaTitleEl) userKarmaTitleEl.textContent = usuario.karmaTitle || 'N/A';
         if (userReputacionEl) userReputacionEl.textContent = usuario.reputacion !== undefined ? usuario.reputacion : 'N/A';
-        if (userAvatarEl) userAvatarEl.src = usuario.avatarUrl || 'https://via.placeholder.com/150';
+        
+        if (userAvatarEl) {
+            const fallbackAvatar = `https://robohash.org/${userName}?set=set4`;
+            const avatarUrl = usuario.avatarUrl || fallbackAvatar;
+            
+            userAvatarEl.src = avatarUrl;
+            
+            userAvatarEl.onerror = function() {
+                this.onerror = null; 
+                this.src = fallbackAvatar;
+            };
+        }
 
     } catch(e) {
         console.error("Error obteniendo datos del usuario para perfil:", e);
@@ -53,7 +65,7 @@ function abrirModalEditarPerfil() {
     document.getElementById('edit-email').value = currentUser.email || '';
     
     const avatarPreview = document.getElementById('edit-avatar-preview');
-    avatarPreview.src = currentUser.avatarUrl || 'https://via.placeholder.com/100';
+    avatarPreview.src = currentUser.avatarUrl || `https://robohash.org/${currentUser.userName}?set=set4`;
 
     const selectTitulo = document.getElementById('select-titulo');
     selectTitulo.innerHTML = ''; 
@@ -77,10 +89,30 @@ function abrirModalEditarPerfil() {
     }
 }
 
-function handleGenerarAvatar() {
+async function handleGenerarAvatar() {
     const avatarPreview = document.getElementById('edit-avatar-preview');
-    const randomCacheBuster = new Date().getTime();
-    avatarPreview.src = `https://cataas.com/cat?t=${randomCacheBuster}`;
+    const button = document.getElementById('btn-new-avatar');
+    
+    const originalSrc = avatarPreview.src;
+    
+    if (button) button.disabled = true;
+    avatarPreview.src = 'https://via.placeholder.com/100'; 
+
+    try {
+        const response = await fetchAuth(`${API_BASE_URL}/auth/new-avatar`);
+        if (!response || !response.url) {
+            throw new Error('No se pudo obtener un nuevo avatar.');
+        }
+        
+        avatarPreview.src = response.url;
+        
+    } catch (error) {
+        console.error("Error al generar avatar:", error);
+        alert("Error al cargar un nuevo Gato-Avatar. Se mantendrá la imagen anterior.");
+        avatarPreview.src = originalSrc;
+    } finally {
+        if (button) button.disabled = false;
+    }
 }
 
 async function handleGuardarPerfil(event) {
@@ -119,6 +151,17 @@ async function handleGuardarPerfil(event) {
         }
         
         await cargarPerfil();
+        
+        if (typeof cargarPosts === 'function') {
+            await cargarPosts();
+        }
+        if (typeof cargarTopUsers === 'function') {
+            await cargarTopUsers();
+        }
+        if (typeof actualizarElementosUIAuth === 'function') {
+            actualizarElementosUIAuth(updatedUser);
+        }
+
 
     } catch (error) {
         console.error("Error al guardar perfil:", error);

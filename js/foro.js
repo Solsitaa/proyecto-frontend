@@ -74,6 +74,9 @@ function actualizarElementosUIAuth(userData) {
     const perfilLink = document.getElementById('perfilLink');
     const adminLink = document.getElementById('adminLink');
     const createPostSection = document.getElementById('createPostSection');
+    
+    const navUserAvatar = document.getElementById('navUserAvatar');
+    const navUserName = document.getElementById('navUserName');
 
     if (authButton) {
         if (userData) {
@@ -81,7 +84,18 @@ function actualizarElementosUIAuth(userData) {
             authButton.classList.remove('btn-primary');
             authButton.classList.add('btn', 'btn-outline-warning');
 
-            if (perfilLink) perfilLink.style.display = 'inline';
+            if (perfilLink) perfilLink.style.display = 'flex'; 
+            
+            const avatarUrl = userData.avatarUrl || `https://robohash.org/${userData.userName}?set=set4`;
+            if (navUserAvatar) {
+                navUserAvatar.src = avatarUrl;
+                navUserAvatar.onerror = function() {
+                    this.onerror = null;
+                    this.src = `https://robohash.org/${userData.userName}?set=set4`;
+                }
+            }
+            if (navUserName) navUserName.textContent = userData.userName;
+            
             if (adminLink && userData.rol === 'ADMINISTRADOR') {
                 adminLink.style.display = 'inline';
             } else if (adminLink) {
@@ -155,19 +169,26 @@ async function cargarPosts() {
 
             const canVote = userData && !isOwner;
             const votedClass = post.hasVoted ? 'voted' : '';
+            
+            const postUserName = escapeHtml(post.userName || 'usuario');
+            const fallbackSrc = `https://robohash.org/${postUserName}?set=set4`;
+            const avatarSrc = escapeHtml(post.userAvatarUrl || fallbackSrc);
 
             postCard.innerHTML = `
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h2 class="h5 card-post-header mb-0">
-                                ${escapeHtml(post.userName || 'Anónimo')}
-                                <span class="karma-title">(${escapeHtml(post.userTitle || 'Usuario')})</span>
-                                ${statusBadge}
-                            </h2>
-                            ${post.title ? `<h3 class="h5 text-primary mt-2">${escapeHtml(post.title)}</h3>` : ''}
+                        <div class="d-flex align-items-center">
+                            <img src="${avatarSrc}" alt="avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                            <div class="ms-3">
+                                <h2 class="h5 card-post-header mb-0">
+                                    ${postUserName}
+                                    <span class="karma-title">(${escapeHtml(post.userTitle || 'Usuario')})</span>
+                                    ${statusBadge}
+                                </h2>
+                                ${post.title ? `<h3 class="h5 text-primary mt-1 mb-0">${escapeHtml(post.title)}</h3>` : ''}
+                            </div>
                         </div>
-                        ${canReport ? `<button class="btn btn-outline-danger btn-sm" onclick="abrirModalReportar(${post.idPost}, '${escapeHtml(post.userName || '')}', ${post.userId})">🚩 Reportar</button>` : ''}
+                        ${canReport ? `<button class="btn btn-outline-danger btn-sm" onclick="abrirModalReportar(${post.idPost}, '${postUserName}', ${post.userId})">🚩 Reportar</button>` : ''}
                     </div>
                     
                     <p class="card-text my-3">${escapeHtml(post.content || '')}</p>
@@ -245,10 +266,15 @@ async function cargarTopUsers() {
         topUsers.forEach(user => {
             const userElement = document.createElement('li');
             userElement.className = 'list-group-item d-flex align-items-center gap-2';
+            
+            const userName = escapeHtml(user.userName || 'usuario');
+            const fallbackSrc = `https://robohash.org/${userName}?set=set4`;
+            const avatarSrc = escapeHtml(user.avatarUrl || fallbackSrc);
+            
             userElement.innerHTML = `
-                <span style="font-size: 2rem;">👤</span>
+                <img src="${avatarSrc}" alt="avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <div>
-                    <strong class="d-block">${escapeHtml(user.userName || 'Usuario')}</strong>
+                    <strong class="d-block">${userName}</strong>
                     <small class="text-muted">
                         ${user.reputacion || 0} reconocimientos
                     </small>

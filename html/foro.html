@@ -21,7 +21,12 @@
                 <input class="form-control me-auto ms-lg-4 my-2 my-lg-0" type="search" id="searchInput" placeholder="🔍 Buscar posts..." style="max-width: 400px;">
                 <div class="navbar-nav ms-auto align-items-center">
                     <a class="nav-link text-white" href="index.html">Inicio</a>
-                    <a class="nav-link text-white" href="perfil.html" id="perfilLink" style="display: none;">Perfil</a>
+                    
+                    <a class="nav-link text-white d-flex align-items-center" href="perfil.html" id="perfilLink" style="display: none;">
+                        <img src="https://via.placeholder.com/30" id="navUserAvatar" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; margin-right: 5px;">
+                        <span id="navUserName">Perfil</span>
+                    </a>
+
                     <a class="nav-link text-white" href="admin.html" id="adminLink" style="display: none;">Admin</a>
                     <button id="authButton" class="btn btn-primary" onclick="handleAuth()">Iniciar sesión</button>
                 </div>
