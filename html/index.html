@@ -21,15 +21,22 @@
                 <div class="navbar-nav ms-auto align-items-center">
                     <a class="nav-link text-white" href="quienes-somos.html">Quiénes somos</a>
                     <a class="nav-link text-white" href="foro.html">Foro</a>
-                    <a class="nav-link text-white" href="perfil.html" id="perfilLinkNav" style="display: none;">Perfil</a>
+                    
+                    <a class="nav-link text-white d-flex align-items-center" href="perfil.html" id="perfilLinkNav" style="display: none;">
+                        <img src="https://via.placeholder.com/30" id="navUserAvatar" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; margin-right: 5px;">
+                        <span id="navUserName">Perfil</span>
+                    </a>
+                    
+                    <a class="nav-link text-white" href="admin.html" id="adminLinkNav" style="display: none;">Admin</a>
+                    
                     <a class="nav-link" href="registro.html" id="registroLinkNav">
                         <button class="btn btn-outline-light btn-sm">Registrarse</button>
                     </a>
                     <a class="nav-link" href="login.html" id="loginLinkNav">
                         <button class="btn btn-primary btn-sm">Iniciar Sesión</button>
                     </a>
+                    </div>
                 </div>
-            </div>
         </div>
     </nav>
 
@@ -124,16 +131,39 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/auth.js"></script>
+    
     <script>
          function actualizarNavIndex(loggedIn, userData) {
             const perfilLinkNav = document.getElementById('perfilLinkNav');
+            const navUserAvatar = document.getElementById('navUserAvatar');
+            const navUserName = document.getElementById('navUserName');
+            const adminLinkNav = document.getElementById('adminLinkNav');
+
             const registroLinkNav = document.getElementById('registroLinkNav');
             const loginLinkNav = document.getElementById('loginLinkNav');
             const navDiv = loginLinkNav ? loginLinkNav.parentElement : null;
             let logoutLink = document.getElementById('logoutLinkNav');
 
             if (loggedIn && userData) {
-                if (perfilLinkNav) perfilLinkNav.style.display = 'inline';
+                // --- Logueado ---
+                if (perfilLinkNav) perfilLinkNav.style.display = 'flex'; // Cambiado a flex
+                
+                const avatarUrl = userData.avatarUrl || `https://robohash.org/${userData.userName}?set=set4`;
+                if (navUserAvatar) {
+                    navUserAvatar.src = avatarUrl;
+                    navUserAvatar.onerror = function() {
+                        this.onerror = null;
+                        this.src = `https://robohash.org/${userData.userName}?set=set4`;
+                    }
+                }
+                if (navUserName) navUserName.textContent = userData.userName;
+
+                if (adminLinkNav && userData.rol === 'ADMINISTRADOR') {
+                    adminLinkNav.style.display = 'inline';
+                } else if (adminLinkNav) {
+                    adminLinkNav.style.display = 'none';
+                }
+
                 if (registroLinkNav) registroLinkNav.style.display = 'none';
                 if (loginLinkNav) loginLinkNav.style.display = 'none';
 
@@ -160,7 +190,9 @@
                 }
 
             } else {
+                // --- No logueado ---
                 if (perfilLinkNav) perfilLinkNav.style.display = 'none';
+                if (adminLinkNav) adminLinkNav.style.display = 'none';
                 if (registroLinkNav) registroLinkNav.style.display = 'inline-block';
                 if (loginLinkNav) loginLinkNav.style.display = 'inline-block';
                 if (logoutLink) logoutLink.style.display = 'none';
@@ -168,5 +200,5 @@
         }
         onAuthStatusChecked(actualizarNavIndex);
     </script>
-</body>
+    </body>
 </html>
