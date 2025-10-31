@@ -4,25 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mente Libre - Perfil de Usuario</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
     <header>
         🧠 Mente Libre
-    </header>
+        </header>
 
     <section class="perfil-usuario">
         <img src="https://via.placeholder.com/150" alt="Foto de usuario" id="userAvatar">
-        <h2 id="userName">Usuario</h2>
-        <p id="userEmail">correo@ejemplo.com</p>
-        <p>Estado actual: <strong id="userStatus">Tranquilo</strong></p>
+        <h2 id="userName">Cargando...</h2>
+        <p id="userEmail">Cargando...</p>
+        <p>Título: <strong id="userKarmaTitle">Cargando...</strong></p>
+        <p>Reputación: <strong id="userReputacion">Cargando...</strong></p>
 
-        <div class="estadisticas">
-            <div>
+        <div class="estadisticas" style="margin-top: 15px;">
+            <div style="display: none;">
                 <h3 id="userSessions">0</h3>
                 <span>Sesiones</span>
             </div>
-            <div>
+            <div style="display: none;">
                 <h3 id="userMood">-</h3>
                 <span>Ánimo promedio</span>
             </div>
@@ -38,6 +39,7 @@
         </div>
     </section>
 
+    <script src="js/auth.js"></script>
     <script src="js/perfil.js"></script>
 </body>
 </html>

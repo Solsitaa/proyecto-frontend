@@ -20,12 +20,13 @@
                 </ul>
             </nav>
         </div>
-        <ul>
-            <li><a href="quienes-somos.html">Quiénes somos</a></li>
-            <li><a href="foro.html">Foro</a></li>
-            <li><a href="registro.html">Registrarse</a></li>
-            <li><a href="login.html">Iniciar sesión</a></li>
-        </ul>
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+             <a href="quienes-somos.html">Quiénes somos</a>
+             <a href="foro.html">Foro</a>
+             <a href="perfil.html" id="perfilLinkNav" style="display: none;">Perfil</a>
+             <a href="registro.html" id="registroLinkNav">Registrarse</a>
+             <a href="../html/login.html" id="loginLinkNav">Iniciar Sesión</a>
+        </div>
     </nav>
 
     <div class="contenedor-principal">
@@ -39,11 +40,14 @@
                     <button class="btn-secondary" onclick="location.href='foro.html'">Explorar la comunidad</button>
                 </div>
             </div>
-            <img src="/imagenes/afiche-apoyo.png" alt="afiche apoyo" class="afiche-apoyo">
-        </div>
-    <div class="box3">
-        <img src="/imagenes/acompanamiento.png" alt="acompañamiento" class="acompañamiento">
-            <div class="objetivo">
+            <div class="hero-image">
+                <img src="../imagenes/afiche-apoyo.png" alt="Apoyo emocional">
+            </div>
+        </section>
+
+        <section class="objetivo-section">
+            <img src="../imagenes/acompanamiento.png" alt="Acompañamiento" style="max-width: 400px;">
+            <div class="objetivo-box">
                 <h2>Nuestro objetivo</h2>
                 <p>En Mente Libre nuestro principal objetivo con el foro de salud mental es promover el bienestar emocional y prevenir el suicidio mediante educación, apoyo y estrategias integrales. Buscamos aumentar la conciencia sobre los signos de alerta, facilitar la detección temprana y ofrecer acompañamiento psicológico. Además, pretendemos reducir el estigma, fortalecer la resiliencia y disminuir los factores de riesgo asociados.</p>
             </div>
@@ -53,19 +57,19 @@
             <h3>¿Qué encontrarás en nuestro foro?</h3>
             <div class="servicios-grid">
                 <div class="servicio-card">
-                    <img src="img/foro.png" alt="Foro de apoyo">
+                    <img src="../imagenes/foro.png" alt="Foro de apoyo">
                     <h4>Foro de apoyo emocional</h4>
                     <p>Comparte experiencias y recibe apoyo de la comunidad</p>
                     <button onclick="location.href='foro.html'">Acceder</button>
                 </div>
                 <div class="servicio-card">
-                    <img src="img/chat.png" alt="Chat">
+                    <img src="../imagenes/chat.png" alt="Chat">
                     <h4>Chat con especialistas</h4>
                     <p>Habla con profesionales de la salud mental</p>
                     <button onclick="location.href='contacto.html'">Contactar</button>
                 </div>
                 <div class="servicio-card">
-                    <img src="img/contacto-emergencia.png" alt="Emergencia">
+                    <img src="../imagenes/contacto-emergencia.png" alt="Emergencia">
                     <h4>Contactos de emergencia</h4>
                     <p>Números y recursos para situaciones críticas</p>
                     <button onclick="location.href='contacto.html'">Ver contactos</button>
@@ -117,5 +121,49 @@
         <a href="/html/quienes-somos.html">Quienes somos</a>
         </div>
     </footer>
+
+    <script src="../js/auth.js"></script>
+    <script>
+         function actualizarNavIndex(loggedIn, userData) {
+            const perfilLinkNav = document.getElementById('perfilLinkNav');
+            const registroLinkNav = document.getElementById('registroLinkNav');
+            const loginLinkNav = document.getElementById('loginLinkNav');
+            const navDiv = loginLinkNav ? loginLinkNav.parentElement : null;
+            let logoutLink = document.getElementById('logoutLinkNav');
+
+            if (loggedIn && userData) {
+                if (perfilLinkNav) perfilLinkNav.style.display = 'inline';
+                if (registroLinkNav) registroLinkNav.style.display = 'none';
+                if (loginLinkNav) loginLinkNav.style.display = 'none';
+
+                if (!logoutLink && navDiv) {
+                    logoutLink = document.createElement('a');
+                    logoutLink.href = '#';
+                    logoutLink.id = 'logoutLinkNav';
+                    logoutLink.textContent = 'Cerrar Sesión';
+                    logoutLink.onclick = function(event) {
+                        event.preventDefault();
+                        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                            cerrarSesion();
+                        }
+                    };
+                    logoutLink.style.cursor = 'pointer';
+                    logoutLink.style.color = 'white';
+                     logoutLink.style.fontSize = '18px';
+                    navDiv.appendChild(logoutLink);
+                } else if (logoutLink) {
+                   logoutLink.style.display = 'inline';
+                }
+
+            } else {
+                if (perfilLinkNav) perfilLinkNav.style.display = 'none';
+                if (registroLinkNav) registroLinkNav.style.display = 'inline';
+                if (loginLinkNav) loginLinkNav.style.display = 'inline';
+                if (logoutLink) logoutLink.style.display = 'none';
+            }
+        }
+
+        onAuthStatusChecked(actualizarNavIndex);
+    </script>
 </body>
 </html>

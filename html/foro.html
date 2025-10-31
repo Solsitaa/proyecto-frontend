@@ -106,29 +106,67 @@
                         </div>
                     </div>
                 </li>
-                <li>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 2rem;">👤</span>
-                        <div>
-                            <strong>Usuario 3</strong>
-                            <p style="font-size: 0.85rem; color: #666; margin: 0;">87 reconocimientos</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 2rem;">👤</span>
-                        <div>
-                            <strong>Usuario 4</strong>
-                            <p style="font-size: 0.85rem; color: #666; margin: 0;">76 reconocimientos</p>
-                        </div>
-                    </div>
-                </li>
             </ul>
         </aside>
     </div>
 
+    <div id="modal-comentarios" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalComentarios()">&times;</span>
+            <h2 id="modal-title">Comentarios</h2>
+            <div id="comentarios-list"></div>
+            <div id="form-comentario" style="margin-top: 20px; display: none;">
+                <textarea id="nuevo-comentario" rows="3" placeholder="Escribe un comentario..." maxlength="250"></textarea>
+                <button onclick="agregarComentario()">Comentar</button>
+            </div>
+        </div>
+    </div>
 
+    <div id="modal-editar-post" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalEditar()">&times;</span>
+            <h2>Editar Post</h2>
+            <form id="form-editar-post" onsubmit="return submitEditarPost(event)">
+                <div class="grupo">
+                    <label for="edit-title">Título:</label>
+                    <input type="text" id="edit-title" maxlength="50">
+                </div>
+                <div class="grupo">
+                    <label for="edit-content">Contenido:</label>
+                    <textarea id="edit-content" rows="4" maxlength="250" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-reportar" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalReportar()">&times;</span>
+            <h2>Reportar Usuario</h2>
+            <form id="form-reportar" onsubmit="return submitReporte(event)">
+                <div class="grupo">
+                    <label for="report-reason">Motivo:</label>
+                    <select id="report-reason" required>
+                        <option value="">Selecciona un motivo</option>
+                        <option value="ACOSO">Acoso</option>
+                        <option value="VIOLENCIA">Violencia</option>
+                        <option value="MAL_USO_DEL_FORO">Mal uso del foro</option>
+                        <option value="SPAM">Spam</option>
+                    </select>
+                </div>
+                <div class="grupo">
+                    <label for="report-description">Descripción:</label>
+                    <textarea id="report-description" rows="3" placeholder="Describe el problema..." required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Enviar Reporte</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/comentarios.js"></script>
+    <script src="js/reportes.js"></script>
     <script src="js/foro.js"></script>
 </body>
 </html>

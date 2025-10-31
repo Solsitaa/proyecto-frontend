@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Mente Libre</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        🧠 Mente Libre - Panel de Administración
+    </header>
+
+    <nav style="background: white; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; gap: 20px; flex-wrap: wrap;">
+            <button class="tab-button active" onclick="cambiarTab('stats')">📊 Estadísticas</button>
+            <button class="tab-button" onclick="cambiarTab('posts')">📝 Posts Pendientes</button>
+            <button class="tab-button" onclick="cambiarTab('users')">👥 Usuarios</button>
+            <button class="tab-button" onclick="cambiarTab('reports')">🚩 Reportes</button>
+            <a href="index.html" style="margin-left: auto; color: #3c4fff; font-weight: bold;">← Volver al Inicio</a>
+        </div>
+    </nav>
+
+    <div class="contenedor-principal">
+        <div id="tab-stats" class="tab-content">
+            <h2>Estadísticas del Foro</h2>
+            <div id="stats-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div class="stat-card">
+                    <h3>Usuarios Totales</h3>
+                    <p id="stat-total-users">Cargando...</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Usuarios Activos</h3>
+                    <p id="stat-active-users">Cargando...</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Usuarios Bloqueados</h3>
+                    <p id="stat-blocked-users">Cargando...</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Posts Totales</h3>
+                    <p id="stat-total-posts">Cargando...</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Posts Pendientes</h3>
+                    <p id="stat-pending-posts">Cargando...</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Posts Aprobados</h3>
+                    <p id="stat-approved-posts">Cargando...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-posts" class="tab-content" style="display: none;">
+            <h2>Posts Pendientes de Moderación</h2>
+            <div id="pending-posts-list"></div>
+        </div>
+
+        <div id="tab-users" class="tab-content" style="display: none;">
+            <h2>Gestión de Usuarios</h2>
+            <div id="users-list"></div>
+        </div>
+
+        <div id="tab-reports" class="tab-content" style="display: none;">
+            <h2>Reportes Pendientes</h2>
+            <div id="reports-list"></div>
+        </div>
+    </div>
+
+    <div id="modal-resolve-report" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModalResolverReporte()">&times;</span>
+            <h2>Resolver Reporte</h2>
+            <form id="form-resolve-report" onsubmit="return submitResolverReporte(event)">
+                <div class="grupo">
+                    <label for="resolve-status">Decisión:</label>
+                    <select id="resolve-status" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="RESUELTO_SIN_ACCION">Resolver sin acción</option>
+                        <option value="RESUELTO_CON_PENALIZACION">Resolver con penalización</option>
+                    </select>
+                </div>
+                <div class="grupo" id="penalty-group" style="display: none;">
+                    <label for="karma-penalty">Penalización de Karma:</label>
+                    <input type="number" id="karma-penalty" min="0" step="0.1" value="5">
+                </div>
+                <button type="submit" class="btn-primary">Resolver Reporte</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
