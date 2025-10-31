@@ -224,6 +224,16 @@ async function getCurrentUserData() {
     return userDataPromise;
 }
 
+function updateCurrentUserData(newUserData) {
+    if (newUserData) {
+        currentUserData = newUserData;
+        userDataPromise = Promise.resolve(newUserData);
+    } else {
+        currentUserData = null;
+        userDataPromise = null;
+    }
+}
+
 async function cerrarSesion() {
     try {
         await fetchAuth(`${API_BASE_URL}/auth/logout`, {
