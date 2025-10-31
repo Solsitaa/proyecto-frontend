@@ -4,54 +4,52 @@ let currentEditPostId = null;
 let currentReportUserId = null;
 let currentReportPostId = null;
 
-async function darReconocimiento(button, postId) {
+async function handleVote(button, postId) {
     let userData;
     try {
         userData = await getCurrentUserData();
         if (!userData) {
-            alert('Debes iniciar sesión para dar reconocimiento.');
+            alert('Debes iniciar sesión para votar.');
             return;
         }
     } catch (authError) {
-        alert('Debes iniciar sesión para dar reconocimiento.');
+        alert('Debes iniciar sesión para votar.');
         return;
     }
 
-
-    const originalText = button.textContent;
     button.disabled = true;
+    const countSpan = document.getElementById(`vote-count-${postId}`);
 
     try {
-        const responseText = await fetchAuth(`${API_BASE_URL_FORO}/posts/${postId}/vote?type=LIKE`, {
+        const voteResponse = await fetchAuth(`${API_BASE_URL_FORO}/posts/${postId}/vote?type=LIKE`, {
             method: 'POST'
         });
 
-        button.textContent = `✓ ${responseText || 'Hecho'}`;
-        button.style.backgroundColor = '#90EE90';
-
-        setTimeout(() => {
-            if(button) {
-                button.textContent = originalText;
-                button.style.backgroundColor = '';
-                button.disabled = false;
-            }
-        }, 2000);
-
+        if (countSpan) {
+            countSpan.textContent = voteResponse.newCount;
+        }
+        
+        if (voteResponse.voted) {
+            button.classList.add('voted');
+        } else {
+            button.classList.remove('voted');
+        }
 
     } catch (error) {
-        console.error('Error al dar reconocimiento:', error);
+        console.error('Error al votar:', error);
         if (error.message === 'AUTH_REQUIRED') {
             alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
             alert(error.message || 'No se pudo registrar el voto.');
         }
+    } finally {
         if(button) {
-            button.textContent = originalText;
             button.disabled = false;
         }
     }
 }
+
 
 async function handleAuth() {
     const userData = await getCurrentUserData();
@@ -106,14 +104,7 @@ async function cargarPosts() {
 
 
     try {
-
-        const response = await fetch(`${API_BASE_URL_FORO}/posts`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || `Error ${response.status}: ${response.statusText}`);
-        }
-        const posts = await response.json();
-
+        const posts = await fetchAuth(`${API_BASE_URL_FORO}/posts`);
         postListDiv.innerHTML = '';
 
         if (!Array.isArray(posts)) {
@@ -149,6 +140,9 @@ async function cargarPosts() {
             const canEdit = isOwner && post.status !== 'RECHAZADO';
             const canReport = userData && !isOwner;
 
+            const canVote = userData && !isOwner;
+            const votedClass = post.hasVoted ? 'voted' : '';
+
             postCard.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: start;">
                     <div>
@@ -163,8 +157,22 @@ async function cargarPosts() {
                     ? `<p style="font-size: 0.8rem; color: #888;">Editado: ${new Date(post.updateDate).toLocaleString()}</p>`
                     : ''
                 }
-                <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                    ${canReport ? `<button class="reputacion" onclick="darReconocimiento(this, ${post.idPost})">👍 Dar Reconocimiento</button>` : ''}
+                <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; align-items: center;">
+                    
+                    ${canVote ? `
+                        <div class="vote-widget">
+                            <button id="vote-btn-${post.idPost}" class="upvote-btn ${votedClass}" onclick="handleVote(this, ${post.idPost})">
+                                ▲
+                            </button>
+                            <span id="vote-count-${post.idPost}" class="vote-count">${post.voteCount}</span>
+                        </div>
+                    ` : `
+                        <div class="vote-widget">
+                            <button class="upvote-btn" disabled>▲</button>
+                            <span class="vote-count">${post.voteCount}</span>
+                        </div>
+                    `}
+
                     <button class="btn-secondary" onclick="abrirModalComentarios(${post.idPost})">💬 Comentarios</button>
                     ${canEdit ? `
                         <button class="btn-primary" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
@@ -184,7 +192,11 @@ async function cargarPosts() {
 
     } catch (error) {
         console.error('Error al cargar posts:', error);
-        postListDiv.innerHTML = `<p style="color: red;">Error al cargar los posts: ${error.message}</p>`;
+        if (error.message === 'AUTH_REQUIRED') {
+             postListDiv.innerHTML = `<p style="color: red;">Error al cargar posts: Tu sesión ha expirado. Por favor, inicia sesión.</p>`;
+        } else {
+             postListDiv.innerHTML = `<p style="color: red;">Error al cargar los posts: ${error.message}</p>`;
+        }
     }
 }
 

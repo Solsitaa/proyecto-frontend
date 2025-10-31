@@ -39,12 +39,7 @@ async function cargarComentarios(postId) {
 
 
     try {
-        const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments`);
-        if (!response.ok) {
-            throw new Error('Error al cargar comentarios: ' + response.statusText);
-        }
-
-        const comentarios = await response.json();
+        const comentarios = await fetchAuth(`${API_BASE_URL}/posts/${postId}/comments`);
 
         comentariosList.innerHTML = '';
 
@@ -72,6 +67,8 @@ async function cargarComentarios(postId) {
             }
 
             const isOwner = userData && userData.userName === comentario.userName;
+            const canVote = userData && !isOwner;
+            const votedClass = comentario.hasVoted ? 'voted' : '';
 
             comentarioDiv.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: start;">
@@ -79,12 +76,29 @@ async function cargarComentarios(postId) {
                     ${statusBadge}
                 </div>
                 <p style="margin: 8px 0; color: #333;">${escapeHtml(comentario.content || '')}</p>
-                <small style="color: #888;">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
-                ${isOwner ? `
-                    <div style="margin-top: 10px;">
-                        <button class="btn-small btn-danger" onclick="eliminarComentario(${comentario.id})">🗑️ Eliminar</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <small style="color: #888;">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
+                    
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        ${isOwner ? `
+                            <button class="btn-small btn-danger" onclick="eliminarComentario(${comentario.id})">🗑️</button>
+                        ` : ''}
+
+                        ${canVote ? `
+                            <div class="vote-widget">
+                                <button id="comment-vote-btn-${comentario.id}" class="upvote-btn ${votedClass}" style="width: 30px; height: 30px; font-size: 1rem;" onclick="handleCommentVote(this, ${comentario.id})">
+                                    ▲
+                                </button>
+                                <span id="comment-vote-count-${comentario.id}" class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
+                            </div>
+                        ` : `
+                            <div class="vote-widget">
+                                <button class="upvote-btn" style="width: 30px; height: 30px; font-size: 1rem;" disabled>▲</button>
+                                <span class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
+                            </div>
+                        `}
                     </div>
-                ` : ''}
+                </div>
             `;
 
             if (comentario.status === 'APROBADO' || isOwner) {
@@ -101,6 +115,53 @@ async function cargarComentarios(postId) {
         comentariosList.innerHTML = `<p style="color: red;">Error al cargar los comentarios: ${error.message}</p>`;
     }
 }
+
+async function handleCommentVote(button, commentId) {
+    let userData;
+    try {
+        userData = await getCurrentUserData();
+        if (!userData) {
+            alert('Debes iniciar sesión para votar.');
+            return;
+        }
+    } catch (authError) {
+        alert('Debes iniciar sesión para votar.');
+        return;
+    }
+
+    button.disabled = true;
+    const countSpan = document.getElementById(`comment-vote-count-${commentId}`);
+
+    try {
+        const voteResponse = await fetchAuth(`${API_BASE_URL}/comments/${commentId}/vote?type=LIKE`, {
+            method: 'POST'
+        });
+
+        if (countSpan) {
+            countSpan.textContent = voteResponse.newCount;
+        }
+        
+        if (voteResponse.voted) {
+            button.classList.add('voted');
+        } else {
+            button.classList.remove('voted');
+        }
+
+    } catch (error) {
+        console.error('Error al votar en comentario:', error);
+        if (error.message === 'AUTH_REQUIRED') {
+            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'login.html';
+        } else {
+            alert(error.message || 'No se pudo registrar el voto.');
+        }
+    } finally {
+        if(button) {
+            button.disabled = false;
+        }
+    }
+}
+
 
 async function agregarComentario() {
     let userData;
