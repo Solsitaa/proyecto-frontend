@@ -82,7 +82,7 @@ async function cargarComentarios(postId) {
                     
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-start">
-                            <strong class="text-primary">${commentUserName}</strong>
+                            <strong class="text-primary">${commentUserName} <span class="karma-title">(${escapeHtml(comentario.userTitle || 'Usuario')})</span></strong>
                             ${statusBadge}
                         </div>
                         <p class="mb-1 mt-1">${escapeHtml(comentario.content || '')}</p>

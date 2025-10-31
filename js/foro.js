@@ -277,7 +277,7 @@ async function cargarTopUsers() {
             userElement.innerHTML = `
                 <img src="${avatarSrc}" alt="avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <div>
-                    <strong class="d-block">${userName}</strong>
+                    <strong class="d-block">${userName} <span class="karma-title" style="font-size: 0.9rem; font-weight: normal;">(${escapeHtml(user.karmaTitle || 'Usuario')})</span></strong>
                     <small class="text-muted">
                         ${user.reputacion || 0} reconocimientos
                     </small>
