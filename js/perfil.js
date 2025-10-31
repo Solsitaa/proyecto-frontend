@@ -123,7 +123,7 @@ async function handleGuardarPerfil(event) {
 
     const nombre = document.getElementById('edit-nombre').value;
     const apellido = document.getElementById('edit-apellido').value;
-    const email = document.getElementById('edit-email').value;
+    const email = document.getElementById('edit-email').value.trim();
     const selectedTitle = document.getElementById('select-titulo').value;
     const avatarUrl = document.getElementById('edit-avatar-preview').src;
     const userName = document.getElementById('edit-username').value.trim();
@@ -132,6 +132,8 @@ async function handleGuardarPerfil(event) {
         showErrorPerfil("El nombre de usuario debe tener al menos 4 caracteres.");
         return false;
     }
+
+    const credentialsChanged = (email !== currentUser.email) || (userName !== currentUser.userName);
     
     const updateData = {
         nombre,
@@ -151,23 +153,28 @@ async function handleGuardarPerfil(event) {
             body: JSON.stringify(updateData)
         });
 
-        updateCurrentUserData(updatedUser);
-        currentUser = updatedUser;
-        
-        if (modalEditarPerfil) {
-            modalEditarPerfil.hide();
-        }
-        
-        await cargarPerfil();
-        
-        if (typeof cargarPosts === 'function') {
-            await cargarPosts();
-        }
-        if (typeof cargarTopUsers === 'function') {
-            await cargarTopUsers();
-        }
-        if (typeof actualizarElementosUIAuth === 'function') {
-            actualizarElementosUIAuth(updatedUser);
+        if (credentialsChanged) {
+            alert("Tus datos de sesión (usuario o correo) han cambiado. Por seguridad, por favor vuelve a iniciar sesión.");
+            await cerrarSesion();
+        } else {
+            updateCurrentUserData(updatedUser);
+            currentUser = updatedUser;
+            
+            if (modalEditarPerfil) {
+                modalEditarPerfil.hide();
+            }
+            
+            await cargarPerfil();
+            
+            if (typeof cargarPosts === 'function') {
+                await cargarPosts();
+            }
+            if (typeof cargarTopUsers === 'function') {
+                await cargarTopUsers();
+            }
+            if (typeof actualizarElementosUIAuth === 'function') {
+                actualizarElementosUIAuth(updatedUser);
+            }
         }
 
     } catch (error) {
