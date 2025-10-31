@@ -191,7 +191,7 @@ async function cargarPosts() {
                                 ${post.title ? `<h3 class="h5 text-primary mt-1 mb-0">${escapeHtml(post.title)}</h3>` : ''}
                             </div>
                         </div>
-                        ${canReport ? `<button class="btn btn-outline-danger btn-sm" onclick="abrirModalReportar(${post.idPost}, '${postUserName}', ${post.userId})">🚩 Reportar</button>` : ''}
+                        ${canReport ? `<button class="btn btn-outline-danger btn-sm" onclick="abrirModalReportar(${post.idPost}, '${postUserName}', ${post.userId}, 'POST')">🚩 Reportar</button>` : ''}
                     </div>
                     
                     <p class="card-text my-3">${escapeHtml(post.content || '')}</p>

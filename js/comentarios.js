@@ -69,8 +69,9 @@ async function cargarComentarios(postId) {
             }
 
             const isOwner = userData && userData.userName === comentario.userName;
-            const canVote = userData && !isOwner;
+            const canReport = userData && !isOwner;
             const votedClass = comentario.hasVoted ? 'voted' : '';
+            const canVote = userData && !isOwner;
 
             const commentUserName = escapeHtml(comentario.userName || 'usuario');
             const fallbackSrc = `https://robohash.org/${commentUserName}?set=set4`;
@@ -92,6 +93,10 @@ async function cargarComentarios(postId) {
                             <div class="d-flex align-items-center gap-2">
                                 ${isOwner ? `
                                     <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" onclick="eliminarComentario(${comentario.id})">🗑️</button>
+                                ` : ''}
+
+                                ${canReport ? `
+                                    <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" title="Reportar comentario" onclick="abrirModalReportar(${comentario.id}, '${commentUserName}', ${comentario.userId}, 'COMMENT')">🚩</button>
                                 ` : ''}
 
                                 ${canVote ? `
