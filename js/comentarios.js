@@ -72,33 +72,43 @@ async function cargarComentarios(postId) {
             const canVote = userData && !isOwner;
             const votedClass = comentario.hasVoted ? 'voted' : '';
 
-            comentarioDiv.innerHTML = `
-                <div class="d-flex justify-content-between align-items-start">
-                    <strong class="text-primary">${escapeHtml(comentario.userName || 'Anónimo')}</strong>
-                    ${statusBadge}
-                </div>
-                <p class="mb-1 mt-1">${escapeHtml(comentario.content || '')}</p>
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                    <small class="text-muted">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
-                    
-                    <div class="d-flex align-items-center gap-2">
-                        ${isOwner ? `
-                            <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" onclick="eliminarComentario(${comentario.id})">🗑️</button>
-                        ` : ''}
+            const commentUserName = escapeHtml(comentario.userName || 'usuario');
+            const fallbackSrc = `https://robohash.org/${commentUserName}?set=set4`;
+            const avatarSrc = escapeHtml(comentario.userAvatarUrl || fallbackSrc); 
 
-                        ${canVote ? `
-                            <div class="vote-widget d-flex align-items-center gap-1">
-                                <button id="comment-vote-btn-${comentario.id}" class="upvote-btn ${votedClass}" style="width: 30px; height: 30px; font-size: 1rem;" onclick="handleCommentVote(this, ${comentario.id})">
-                                    ▲
-                                </button>
-                                <span id="comment-vote-count-${comentario.id}" class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
+            comentarioDiv.innerHTML = `
+                <div class="d-flex align-items-start gap-3">
+                    <img src="${avatarSrc}" alt="avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                    
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <strong class="text-primary">${commentUserName}</strong>
+                            ${statusBadge}
+                        </div>
+                        <p class="mb-1 mt-1">${escapeHtml(comentario.content || '')}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                ${isOwner ? `
+                                    <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" onclick="eliminarComentario(${comentario.id})">🗑️</button>
+                                ` : ''}
+
+                                ${canVote ? `
+                                    <div class="vote-widget d-flex align-items-center gap-1">
+                                        <button id="comment-vote-btn-${comentario.id}" class="upvote-btn ${votedClass}" style="width: 30px; height: 30px; font-size: 1rem;" onclick="handleCommentVote(this, ${comentario.id})">
+                                            ▲
+                                        </button>
+                                        <span id="comment-vote-count-${comentario.id}" class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
+                                    </div>
+                                ` : `
+                                    <div class="vote-widget d-flex align-items-center gap-1">
+                                        <button class="upvote-btn" style="width: 30px; height: 30px; font-size: 1rem;" disabled>▲</button>
+                                        <span class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
+                                    </div>
+                                `}
                             </div>
-                        ` : `
-                            <div class="vote-widget d-flex align-items-center gap-1">
-                                <button class="upvote-btn" style="width: 30px; height: 30px; font-size: 1rem;" disabled>▲</button>
-                                <span class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
-                            </div>
-                        `}
+                        </div>
                     </div>
                 </div>
             `;
