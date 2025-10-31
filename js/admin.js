@@ -1,6 +1,7 @@
 const API_BASE_URL_ADMIN = 'http://localhost:8080/api';
 
 let currentReportIdAdmin = null;
+let modalResolveReport = null;
 
 async function verificarAccesoAdmin() {
     let userData = null;
@@ -19,25 +20,19 @@ async function verificarAccesoAdmin() {
     }
 }
 
-function cambiarTab(tabName) {
-    const allTabs = document.querySelectorAll('.tab-content');
-    allTabs.forEach(tab => tab.style.display = 'none');
-
-    const allButtons = document.querySelectorAll('.tab-button');
-    allButtons.forEach(btn => btn.classList.remove('active'));
-
-    const activeTab = document.getElementById(`tab-${tabName}`);
-    if (activeTab) activeTab.style.display = 'block';
-
-    const activeButton = event.target;
-    if (activeButton) activeButton.classList.add('active');
-
-
-    if (tabName === 'stats') cargarEstadisticas();
-    if (tabName === 'posts') cargarPostsPendientes();
-    if (tabName === 'users') cargarUsuarios();
-    if (tabName === 'reports') cargarReportes();
+function setupTabListeners() {
+    const tabs = document.querySelectorAll('#adminTab button[data-bs-toggle="tab"]');
+    tabs.forEach(tab => {
+        tab.addEventListener('shown.bs.tab', event => {
+            const targetId = event.target.getAttribute('data-bs-target');
+            if (targetId === '#nav-stats') cargarEstadisticas();
+            if (targetId === '#nav-posts') cargarPostsPendientes();
+            if (targetId === '#nav-users') cargarUsuarios();
+            if (targetId === '#nav-reports') cargarReportes();
+        });
+    });
 }
+
 
 async function cargarEstadisticas() {
     try {
@@ -72,7 +67,7 @@ async function cargarEstadisticas() {
 async function cargarPostsPendientes() {
     const container = document.getElementById('pending-posts-list');
     if (!container) return;
-    container.innerHTML = '<p>Cargando posts pendientes...</p>';
+    container.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
     try {
         const posts = await fetchAuth(`${API_BASE_URL_ADMIN}/admin/moderation/posts`);
@@ -80,7 +75,7 @@ async function cargarPostsPendientes() {
         container.innerHTML = '';
 
         if (!Array.isArray(posts) || posts.length === 0) {
-            container.innerHTML = '<p>No hay posts pendientes de moderación.</p>';
+            container.innerHTML = '<p class="text-center text-muted">No hay posts pendientes de moderación.</p>';
             return;
         }
 
@@ -88,19 +83,20 @@ async function cargarPostsPendientes() {
             if (!post || typeof post !== 'object') return;
 
             const postCard = document.createElement('div');
-            postCard.className = 'admin-post-card';
-            postCard.style.cssText = 'background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);';
-
+            postCard.className = 'card shadow-sm mb-3';
+            
             postCard.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div style="flex: 1;">
-                        <h3 style="color: #3c4fff; margin-bottom: 10px;">Autor: ${escapeHtml(post.author || '')}</h3>
-                        <p style="color: #333; margin-bottom: 10px;">${escapeHtml(post.content || '')}</p>
-                        <small style="color: #888;">Fecha: ${post.publicationDate ? new Date(post.publicationDate).toLocaleString() : ''}</small>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn-primary" onclick="aprobarPost(${post.id})">✓ Aprobar</button>
-                        <button class="btn-danger" onclick="eliminarPostAdmin(${post.id})">✗ Eliminar</button>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-primary mb-1">Autor: ${escapeHtml(post.author || '')}</h5>
+                            <p class="card-text">${escapeHtml(post.content || '')}</p>
+                            <small class="text-muted">Fecha: ${post.publicationDate ? new Date(post.publicationDate).toLocaleString() : ''}</small>
+                        </div>
+                        <div class="d-flex gap-2 ms-3">
+                            <button class="btn btn-success btn-sm" onclick="aprobarPost(${post.id})">✓ Aprobar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarPostAdmin(${post.id})">✗ Eliminar</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -114,7 +110,7 @@ async function cargarPostsPendientes() {
             alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            container.innerHTML = `<p style="color: red;">Error al cargar posts pendientes: ${error.message}</p>`;
+            container.innerHTML = `<div class="alert alert-danger">Error al cargar posts pendientes: ${error.message}</div>`;
         }
     }
 }
@@ -166,7 +162,7 @@ async function eliminarPostAdmin(postId) {
 async function cargarUsuarios() {
     const container = document.getElementById('users-list');
     if (!container) return;
-    container.innerHTML = '<p>Cargando usuarios...</p>';
+    container.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
     try {
         const users = await fetchAuth(`${API_BASE_URL_ADMIN}/admin/users`);
@@ -174,7 +170,7 @@ async function cargarUsuarios() {
         container.innerHTML = '';
 
         if (!Array.isArray(users) || users.length === 0) {
-            container.innerHTML = '<p>No hay usuarios registrados.</p>';
+            container.innerHTML = '<p class="text-center text-muted">No hay usuarios registrados.</p>';
             return;
         }
 
@@ -182,33 +178,34 @@ async function cargarUsuarios() {
             if (!user || typeof user !== 'object') return;
 
             const userCard = document.createElement('div');
-            userCard.className = 'admin-user-card';
-            userCard.style.cssText = 'background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);';
+            userCard.className = 'card shadow-sm mb-3';
 
             const statusBadge = user.active
-                ? '<span style="background: #4caf50; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem;">Activo</span>'
-                : '<span style="background: #f44336; color: white; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem;">Bloqueado</span>';
+                ? '<span class="badge bg-success-subtle text-success-emphasis rounded-pill">Activo</span>'
+                : '<span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">Bloqueado</span>';
 
             const isAdmin = user.role === 'ADMINISTRADOR';
 
             userCard.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div style="flex: 1;">
-                        <h3 style="color: #3c4fff; margin-bottom: 5px;">${escapeHtml(user.userName || '')} ${statusBadge}</h3>
-                        <p style="margin: 5px 0;"><strong>Email:</strong> ${escapeHtml(user.email || '')}</p>
-                        <p style="margin: 5px 0;"><strong>Rol:</strong> ${escapeHtml(user.role || '')}</p>
-                        <small style="color: #888;">Registro: ${user.registerDate ? new Date(user.registerDate).toLocaleDateString() : ''}</small>
-                    </div>
-                    ${!isAdmin ? `
-                        <div style="display: flex; gap: 10px; flex-direction: column;">
-                            ${user.active
-                                ? `<button class="btn-danger" onclick="bloquearUsuario(${user.id})">🚫 Bloquear</button>`
-                                : `<button class="btn-primary" onclick="desbloquearUsuario(${user.id})">✓ Desbloquear</button>`
-                            }
-                            <button class="btn-secondary" onclick="verPostsUsuario(${user.id}, '${escapeHtml(user.userName || '')}')">📝 Ver Posts</button>
-                            <button class="btn-danger" onclick="eliminarUsuario(${user.id})">🗑️ Eliminar</button>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title text-primary mb-1">${escapeHtml(user.userName || '')} ${statusBadge}</h5>
+                            <p class="card-text mb-1"><strong>Email:</strong> ${escapeHtml(user.email || '')}</p>
+                            <p class="card-text mb-1"><strong>Rol:</strong> ${escapeHtml(user.role || '')}</p>
+                            <small class="text-muted">Registro: ${user.registerDate ? new Date(user.registerDate).toLocaleDateString() : ''}</small>
                         </div>
-                    ` : '<p style="color: #888; font-style: italic;">Administrador</p>'}
+                        ${!isAdmin ? `
+                            <div class="d-flex flex-column gap-2 ms-3" style="min-width: 120px;">
+                                ${user.active
+                                    ? `<button class="btn btn-warning btn-sm" onclick="bloquearUsuario(${user.id})">🚫 Bloquear</button>`
+                                    : `<button class="btn btn-success btn-sm" onclick="desbloquearUsuario(${user.id})">✓ Desbloquear</button>`
+                                }
+                                <button class="btn btn-secondary btn-sm" onclick="verPostsUsuario(${user.id}, '${escapeHtml(user.userName || '')}')">📝 Ver Posts</button>
+                                <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${user.id})">🗑️ Eliminar</button>
+                            </div>
+                        ` : '<span class="text-muted fst-italic ms-3">Administrador</span>'}
+                    </div>
                 </div>
             `;
 
@@ -221,7 +218,7 @@ async function cargarUsuarios() {
             alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            container.innerHTML = `<p style="color: red;">Error al cargar usuarios: ${error.message}</p>`;
+            container.innerHTML = `<div class="alert alert-danger">Error al cargar usuarios: ${error.message}</div>`;
         }
     }
 }
@@ -301,18 +298,20 @@ async function verPostsUsuario(userId, userName) {
     const container = document.getElementById('users-list');
     if (!container) return;
 
+    container.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
+
     try {
         const posts = await fetchAuth(`${API_BASE_URL_ADMIN}/admin/users/${userId}/posts`);
 
         container.innerHTML = `
-            <div style="margin-bottom: 20px;">
-                <button class="btn-secondary" onclick="cargarUsuarios()">← Volver a la lista</button>
-                <h3 style="margin-top: 15px;">Posts de ${escapeHtml(userName)}</h3>
+            <div class="mb-3">
+                <button class="btn btn-secondary btn-sm" onclick="cargarUsuarios()">← Volver a la lista</button>
+                <h3 class="mt-3">Posts de ${escapeHtml(userName)}</h3>
             </div>
         `;
 
         if (!Array.isArray(posts) || posts.length === 0) {
-            container.innerHTML += '<p>Este usuario no tiene posts.</p>';
+            container.innerHTML += '<p class="text-center text-muted">Este usuario no tiene posts.</p>';
             return;
         }
 
@@ -320,17 +319,17 @@ async function verPostsUsuario(userId, userName) {
             if (!post || typeof post !== 'object') return;
 
             const postCard = document.createElement('div');
-            postCard.style.cssText = 'background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);';
-
+            postCard.className = 'card shadow-sm mb-2';
             postCard.innerHTML = `
-                <p><strong>Estado:</strong> ${escapeHtml(post.status || '')}</p>
-                <p>${escapeHtml(post.content || '')}</p>
-                <small style="color: #888;">${post.publicationDate ? new Date(post.publicationDate).toLocaleString() : ''}</small>
-                <div style="margin-top: 10px;">
-                    <button class="btn-danger btn-small" onclick="eliminarPostAdmin(${post.id})">Eliminar Post</button>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Estado:</strong> ${escapeHtml(post.status || '')}</p>
+                    <p class="mb-1">${escapeHtml(post.content || '')}</p>
+                    <small class="text-muted">${post.publicationDate ? new Date(post.publicationDate).toLocaleString() : ''}</small>
+                    <div class="mt-2">
+                        <button class="btn btn-danger btn-sm" onclick="eliminarPostAdmin(${post.id})">Eliminar Post</button>
+                    </div>
                 </div>
             `;
-
             container.appendChild(postCard);
         });
 
@@ -349,7 +348,7 @@ async function verPostsUsuario(userId, userName) {
 async function cargarReportes() {
     const container = document.getElementById('reports-list');
     if (!container) return;
-    container.innerHTML = '<p>Cargando reportes...</p>';
+    container.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
     try {
         const reports = await fetchAuth(`${API_BASE_URL_ADMIN}/admin/reports/pending`);
@@ -357,7 +356,7 @@ async function cargarReportes() {
         container.innerHTML = '';
 
         if (!Array.isArray(reports) || reports.length === 0) {
-            container.innerHTML = '<p>No hay reportes pendientes.</p>';
+            container.innerHTML = '<p class="text-center text-muted">No hay reportes pendientes.</p>';
             return;
         }
 
@@ -365,18 +364,22 @@ async function cargarReportes() {
             if (!report || typeof report !== 'object') return;
 
             const reportCard = document.createElement('div');
-            reportCard.style.cssText = 'background: white; padding: 20px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);';
-
+            reportCard.className = 'card shadow-sm mb-3 border-danger';
+            
             reportCard.innerHTML = `
-                <h3 style="color: #e91e63; margin-bottom: 10px;">🚩 Reporte #${report.id}</h3>
-                <p><strong>Reportado por:</strong> ${escapeHtml(report.reporterUsername || '')}</p>
-                <p><strong>Usuario reportado:</strong> ${escapeHtml(report.reportedUsername || '')}</p>
-                <p><strong>Motivo:</strong> ${escapeHtml(report.reason || '')}</p>
-                <p><strong>Descripción:</strong> ${escapeHtml(report.description || 'Sin descripción')}</p>
-                ${report.relatedPostId ? `<p><strong>Post relacionado ID:</strong> ${report.relatedPostId}</p>` : ''}
-                <small style="color: #888;">Fecha: ${report.createdAt ? new Date(report.createdAt).toLocaleString() : ''}</small>
-                <div style="margin-top: 15px;">
-                    <button class="btn-primary" onclick="abrirModalResolverReporte(${report.id})">Resolver Reporte</button>
+                <div class="card-header bg-danger-subtle">
+                    <h5 class="mb-0 text-danger-emphasis">🚩 Reporte #${report.id}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Reportado por:</strong> ${escapeHtml(report.reporterUsername || '')}</p>
+                    <p class="mb-1"><strong>Usuario reportado:</strong> ${escapeHtml(report.reportedUsername || '')}</p>
+                    <p class="mb-1"><strong>Motivo:</strong> ${escapeHtml(report.reason || '')}</p>
+                    <p class="mb-1"><strong>Descripción:</strong> ${escapeHtml(report.description || 'Sin descripción')}</p>
+                    ${report.relatedPostId ? `<p class="mb-1"><strong>Post relacionado ID:</strong> ${report.relatedPostId}</p>` : ''}
+                    <small class="text-muted">Fecha: ${report.createdAt ? new Date(report.createdAt).toLocaleString() : ''}</small>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="abrirModalResolverReporte(${report.id})">Resolver Reporte</button>
+                    </div>
                 </div>
             `;
 
@@ -389,20 +392,22 @@ async function cargarReportes() {
             alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            container.innerHTML = `<p style="color: red;">Error al cargar reportes: ${error.message}</p>`;
+            container.innerHTML = `<div class="alert alert-danger">Error al cargar reportes: ${error.message}</div>`;
         }
     }
 }
 
 function abrirModalResolverReporte(reportId) {
     currentReportIdAdmin = reportId;
-    const modal = document.getElementById('modal-resolve-report');
-    if (modal) modal.style.display = 'block';
+    if (modalResolveReport) {
+        modalResolveReport.show();
+    }
 }
 
 function cerrarModalResolverReporte() {
-    const modal = document.getElementById('modal-resolve-report');
-    if (modal) modal.style.display = 'none';
+    if (modalResolveReport) {
+        modalResolveReport.hide();
+    }
     const form = document.getElementById('form-resolve-report');
     if (form) form.reset();
     const penaltyGroup = document.getElementById('penalty-group');
@@ -475,16 +480,12 @@ async function submitResolverReporte(event) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+    modalResolveReport = new bootstrap.Modal(document.getElementById('modal-resolve-report'));
+    
     const isAdmin = await verificarAccesoAdmin();
     if (isAdmin) {
         cargarEstadisticas();
-    }
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('modal-resolve-report');
-        if (event.target == modal) {
-            cerrarModalResolverReporte();
-        }
+        setupTabListeners();
     }
 });
 

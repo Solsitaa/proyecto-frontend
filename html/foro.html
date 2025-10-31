@@ -4,111 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foro - Mente Libre</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body>
-    <nav>
-        <div class="logoNav">
-            <a href="index.html">
-                <img src="../imagenes/logo.png" class="logo" alt="Logo">
+<body class="d-flex flex-column">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark-custom shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="../imagenes/logo.png" alt="Mente Libre" class="logo-lg">
+                <h1 class="h3 ms-2 mb-0 text-white">Mente Libre</h1>
             </a>
-            <h1>Mente Libre</h1>
-        </div>
-        <input type="search" id="searchInput" placeholder="🔍 Buscar posts..." style="max-width: 400px;">
-        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-            <a href="index.html">Inicio</a>
-            <a href="perfil.html" id="perfilLink" style="display: none;">Perfil</a>
-            <a href="admin.html" id="adminLink" style="display: none;">Admin</a>
-            <button id="authButton" onclick="handleAuth()">Iniciar sesión</button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <input class="form-control me-auto ms-lg-4 my-2 my-lg-0" type="search" id="searchInput" placeholder="🔍 Buscar posts..." style="max-width: 400px;">
+                <div class="navbar-nav ms-auto align-items-center">
+                    <a class="nav-link text-white" href="index.html">Inicio</a>
+                    <a class="nav-link text-white" href="perfil.html" id="perfilLink" style="display: none;">Perfil</a>
+                    <a class="nav-link text-white" href="admin.html" id="adminLink" style="display: none;">Admin</a>
+                    <button id="authButton" class="btn btn-primary" onclick="handleAuth()">Iniciar sesión</button>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div class="contenedor-foro">
-        <div class="post-list-container" style="flex: 1;">
-            <div id="createPostSection" style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none;">
-                <h2>Crear Nueva Publicación</h2>
-                <div id="error-message-post" class="error-message"></div>
-                <div id="success-message-post" class="success-message"></div>
-                <form id="newPostForm" onsubmit="return handleCrearPost(event)">
-                    <div class="grupo">
-                        <label for="newPostTitle">Título (opcional):</label>
-                        <input type="text" id="newPostTitle" name="title" maxlength="50" placeholder="Título del post">
+    <main class="container-fluid py-4">
+        <div class="row gx-4">
+            <div class="col-lg-8">
+                <div id="createPostSection" class="card shadow-sm border-0 mb-4" style="display: none;">
+                    <div class="card-body p-4">
+                        <h2 class="h4 card-title mb-3">Crear Nueva Publicación</h2>
+                        <div id="error-message-post" class="alert alert-danger" style="display: none;"></div>
+                        <div id="success-message-post" class="alert alert-success" style="display: none;"></div>
+                        
+                        <form id="newPostForm" onsubmit="return handleCrearPost(event)">
+                            <div class="mb-3">
+                                <label for="newPostTitle" class="form-label">Título (opcional):</label>
+                                <input type="text" id="newPostTitle" name="title" maxlength="50" class="form-control" placeholder="Título del post">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPostContent" class="form-label">Tu mensaje:</label>
+                                <textarea id="newPostContent" name="content" rows="4" class="form-control" placeholder="Comparte tus pensamientos aquí..." required maxlength="250"></textarea>
+                                <small id="charCount" class="form-text text-muted">0 / 250 caracteres</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Publicar</button>
+                        </form>
                     </div>
-                    <div class="grupo">
-                        <label for="newPostContent">Tu mensaje:</label>
-                        <textarea id="newPostContent" name="content" rows="4" placeholder="Comparte tus pensamientos aquí..." required maxlength="250"></textarea>
-                        <small id="charCount">0 / 250 caracteres</small>
+                </div>
+
+                <div class="post-list" id="postList">
+                    <p>Cargando posts...</p>
+                </div>
+            </div>
+
+            <aside class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="h4 card-title text-center text-primary">Usuarios Destacados</h2>
+                        <ul id="topUsersList" class="list-group list-group-flush">
+                        </ul>
                     </div>
-                    <button type="submit" class="btn-primary">Publicar</button>
-                </form>
-            </div>
-
-            <div class="post-list" id="postList">
-                <p>Cargando posts...</p>
-            </div>
+                </div>
+            </aside>
         </div>
+    </main>
 
-        <aside class="destacados">
-            <h2>Usuarios Destacados</h2>
-            <ul id="topUsersList">
-            </ul>
-        </aside>
-    </div>
-
-    <div id="modal-comentarios" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="cerrarModalComentarios()">&times;</span>
-            <h2 id="modal-title">Comentarios</h2>
-            <div id="comentarios-list"></div>
-            <div id="form-comentario" style="margin-top: 20px; display: none;">
-                <textarea id="nuevo-comentario" rows="3" placeholder="Escribe un comentario..." maxlength="250"></textarea>
-                <button onclick="agregarComentario()">Comentar</button>
+    <div class="modal fade" id="modal-comentarios" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-title">Comentarios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="comentarios-list"></div>
+                </div>
+                <div class="modal-footer" id="form-comentario" style="display: none;">
+                    <textarea id="nuevo-comentario" class="form-control" rows="3" placeholder="Escribe un comentario..." maxlength="250"></textarea>
+                    <button class="btn btn-primary mt-2" onclick="agregarComentario()">Comentar</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="modal-editar-post" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="cerrarModalEditar()">&times;</span>
-            <h2>Editar Post</h2>
-            <form id="form-editar-post" onsubmit="return submitEditarPost(event)">
-                <div class="grupo">
-                    <label for="edit-title">Título:</label>
-                    <input type="text" id="edit-title" maxlength="50">
+    <div class="modal fade" id="modal-editar-post" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="grupo">
-                    <label for="edit-content">Contenido:</label>
-                    <textarea id="edit-content" rows="4" maxlength="250" required></textarea>
+                <div class="modal-body">
+                    <form id="form-editar-post" onsubmit="return submitEditarPost(event)">
+                        <div class="mb-3">
+                            <label for="edit-title" class="form-label">Título:</label>
+                            <input type="text" id="edit-title" class="form-control" maxlength="50">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-content" class="form-label">Contenido:</label>
+                            <textarea id="edit-content" class="form-control" rows="4" maxlength="250" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Guardar Cambios</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn-primary">Guardar Cambios</button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <div id="modal-reportar" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="cerrarModalReportar()">&times;</span>
-            <h2>Reportar Usuario</h2>
-            <form id="form-reportar" onsubmit="return submitReporte(event)">
-                <div class="grupo">
-                    <label for="report-reason">Motivo:</label>
-                    <select id="report-reason" required>
-                        <option value="">Selecciona un motivo</option>
-                        <option value="ACOSO">Acoso</option>
-                        <option value="VIOLENCIA">Violencia</option>
-                        <option value="MAL_USO_DEL_FORO">Mal uso del foro</option>
-                        <option value="SPAM">Spam</option>
-                    </select>
+    <div class="modal fade" id="modal-reportar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reportar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="grupo">
-                    <label for="report-description">Descripción:</label>
-                    <textarea id="report-description" rows="3" placeholder="Describe el problema..." required></textarea>
+                <div class="modal-body">
+                    <form id="form-reportar" onsubmit="return submitReporte(event)">
+                        <div class="mb-3">
+                            <label for="report-reason" class="form-label">Motivo:</label>
+                            <select id="report-reason" class="form-select" required>
+                                <option value="">Selecciona un motivo</option>
+                                <option value="ACOSO">Acoso</option>
+                                <option value="VIOLENCIA">Violencia</option>
+                                <option value="MAL_USO_DEL_FORO">Mal uso del foro</option>
+                                <option value="SPAM">Spam</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="report-description" class="form-label">Descripción:</label>
+                            <textarea id="report-description" class="form-control" rows="3" placeholder="Describe el problema..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Enviar Reporte</button>
+                    </form>
                 </div>
-                <button type="submit" class="btn-primary">Enviar Reporte</button>
-            </form>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/comentarios.js"></script>
     <script src="../js/reportes.js"></script>

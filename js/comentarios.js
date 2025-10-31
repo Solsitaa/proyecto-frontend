@@ -2,8 +2,10 @@ let currentPostIdForComments = null;
 
 async function abrirModalComentarios(postId) {
     currentPostIdForComments = postId;
-    const modal = document.getElementById('modal-comentarios');
-    if (modal) modal.style.display = 'block';
+    
+    if (modalComentarios) {
+        modalComentarios.show();
+    }
 
     const formComentario = document.getElementById('form-comentario');
     if (formComentario) {
@@ -19,8 +21,9 @@ async function abrirModalComentarios(postId) {
 }
 
 function cerrarModalComentarios() {
-    const modal = document.getElementById('modal-comentarios');
-    if (modal) modal.style.display = 'none';
+    if (modalComentarios) {
+        modalComentarios.hide();
+    }
     currentPostIdForComments = null;
 }
 
@@ -28,7 +31,7 @@ async function cargarComentarios(postId) {
     const comentariosList = document.getElementById('comentarios-list');
     if (!comentariosList) return;
 
-    comentariosList.innerHTML = '<p>Cargando comentarios...</p>';
+    comentariosList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
     let userData = null;
     try {
@@ -49,7 +52,7 @@ async function cargarComentarios(postId) {
 
 
         if (comentarios.length === 0) {
-            comentariosList.innerHTML = '<p style="color: #666;">Aún no hay comentarios. ¡Sé el primero en comentar!</p>';
+            comentariosList.innerHTML = '<p class="text-center text-muted p-3">Aún no hay comentarios. ¡Sé el primero en comentar!</p>';
             return;
         }
 
@@ -58,12 +61,11 @@ async function cargarComentarios(postId) {
             if (!comentario || typeof comentario !== 'object') return;
 
             const comentarioDiv = document.createElement('div');
-            comentarioDiv.className = 'comentario-item';
-            comentarioDiv.style.cssText = 'background: #f7f9ff; padding: 15px; border-radius: 8px; margin-bottom: 10px;';
+            comentarioDiv.className = 'list-group-item';
 
             let statusBadge = '';
             if (comentario.status === 'PENDIENTE') {
-                statusBadge = '<span style="font-size: 0.75rem; background-color: #fff4cc; color: #856404; padding: 2px 5px; border-radius: 3px; margin-left: 5px;">Pendiente</span>';
+                statusBadge = '<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill ms-2">Pendiente</span>';
             }
 
             const isOwner = userData && userData.userName === comentario.userName;
@@ -71,28 +73,28 @@ async function cargarComentarios(postId) {
             const votedClass = comentario.hasVoted ? 'voted' : '';
 
             comentarioDiv.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <strong style="color: #3c4fff;">${escapeHtml(comentario.userName || 'Anónimo')}</strong>
+                <div class="d-flex justify-content-between align-items-start">
+                    <strong class="text-primary">${escapeHtml(comentario.userName || 'Anónimo')}</strong>
                     ${statusBadge}
                 </div>
-                <p style="margin: 8px 0; color: #333;">${escapeHtml(comentario.content || '')}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                    <small style="color: #888;">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
+                <p class="mb-1 mt-1">${escapeHtml(comentario.content || '')}</p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <small class="text-muted">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
                     
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="d-flex align-items-center gap-2">
                         ${isOwner ? `
-                            <button class="btn-small btn-danger" onclick="eliminarComentario(${comentario.id})">🗑️</button>
+                            <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" onclick="eliminarComentario(${comentario.id})">🗑️</button>
                         ` : ''}
 
                         ${canVote ? `
-                            <div class="vote-widget">
+                            <div class="vote-widget d-flex align-items-center gap-1">
                                 <button id="comment-vote-btn-${comentario.id}" class="upvote-btn ${votedClass}" style="width: 30px; height: 30px; font-size: 1rem;" onclick="handleCommentVote(this, ${comentario.id})">
                                     ▲
                                 </button>
                                 <span id="comment-vote-count-${comentario.id}" class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
                             </div>
                         ` : `
-                            <div class="vote-widget">
+                            <div class="vote-widget d-flex align-items-center gap-1">
                                 <button class="upvote-btn" style="width: 30px; height: 30px; font-size: 1rem;" disabled>▲</button>
                                 <span class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
                             </div>
@@ -107,12 +109,12 @@ async function cargarComentarios(postId) {
         });
 
         if (comentariosList.innerHTML === '') {
-            comentariosList.innerHTML = '<p style="color: #666;">No hay comentarios visibles.</p>';
+            comentariosList.innerHTML = '<p class="text-center text-muted p-3">No hay comentarios visibles.</p>';
         }
 
     } catch (error) {
         console.error('Error al cargar comentarios:', error);
-        comentariosList.innerHTML = `<p style="color: red;">Error al cargar los comentarios: ${error.message}</p>`;
+        comentariosList.innerHTML = `<div class="alert alert-danger">Error al cargar los comentarios: ${error.message}</div>`;
     }
 }
 

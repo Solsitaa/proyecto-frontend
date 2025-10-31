@@ -4,6 +4,11 @@ let currentEditPostId = null;
 let currentReportUserId = null;
 let currentReportPostId = null;
 
+let modalEditarPost = null;
+let modalComentarios = null;
+let modalReportar = null;
+
+
 async function handleVote(button, postId) {
     let userData;
     try {
@@ -34,7 +39,7 @@ async function handleVote(button, postId) {
         } else {
             button.classList.remove('voted');
         }
-        
+
         await cargarTopUsers();
 
     } catch (error) {
@@ -73,6 +78,9 @@ function actualizarElementosUIAuth(userData) {
     if (authButton) {
         if (userData) {
             authButton.textContent = 'Cerrar sesión';
+            authButton.classList.remove('btn-primary');
+            authButton.classList.add('btn', 'btn-outline-warning');
+
             if (perfilLink) perfilLink.style.display = 'inline';
             if (adminLink && userData.rol === 'ADMINISTRADOR') {
                 adminLink.style.display = 'inline';
@@ -83,6 +91,9 @@ function actualizarElementosUIAuth(userData) {
 
         } else {
             authButton.textContent = 'Iniciar sesión';
+            authButton.classList.remove('btn-outline-warning');
+            authButton.classList.add('btn', 'btn-primary');
+
             if (perfilLink) perfilLink.style.display = 'none';
             if (adminLink) adminLink.style.display = 'none';
             if (createPostSection) createPostSection.style.display = 'none';
@@ -95,7 +106,7 @@ async function cargarPosts() {
     const postListDiv = document.getElementById('postList');
     if (!postListDiv) return;
 
-    postListDiv.innerHTML = '<p>Cargando posts...</p>';
+    postListDiv.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
     let userData = null;
     try {
@@ -111,13 +122,13 @@ async function cargarPosts() {
 
         if (!Array.isArray(posts)) {
             console.error("La respuesta de /posts no es un array:", posts);
-            postListDiv.innerHTML = '<p style="color: red;">Error: Formato inesperado de datos.</p>';
+            postListDiv.innerHTML = '<div class="alert alert-danger">Error: Formato inesperado de datos.</div>';
             return;
         }
 
 
         if (posts.length === 0) {
-            postListDiv.innerHTML = '<p>Aún no hay posts. ¡Sé el primero en crear uno!</p>';
+            postListDiv.innerHTML = '<p class="text-center text-muted">Aún no hay posts. ¡Sé el primero en crear uno!</p>';
             return;
         }
 
@@ -129,13 +140,13 @@ async function cargarPosts() {
             }
 
             const postCard = document.createElement('div');
-            postCard.className = 'post-card';
+            postCard.className = 'card shadow-sm border-0 mb-3';
 
             let statusBadge = '';
             if (post.status === 'PENDIENTE') {
-                statusBadge = '<span style="font-size: 0.8rem; background-color: #ffecb3; color: #6d4c41; padding: 2px 5px; border-radius: 3px; margin-left: 10px;">⏳ Pendiente de aprobación</span>';
+                statusBadge = '<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill ms-2">Pendiente</span>';
             } else if (post.status === 'RECHAZADO') {
-                statusBadge = '<span style="font-size: 0.8rem; background-color: #ffcdd2; color: #b71c1c; padding: 2px 5px; border-radius: 3px; margin-left: 10px;">❌ Rechazado</span>';
+                statusBadge = '<span class="badge bg-danger-subtle text-danger-emphasis rounded-pill ms-2">Rechazado</span>';
             }
 
             const isOwner = userData && userData.userName === post.userName;
@@ -146,40 +157,47 @@ async function cargarPosts() {
             const votedClass = post.hasVoted ? 'voted' : '';
 
             postCard.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div>
-                        <h2>${escapeHtml(post.userName || 'Anónimo')} <span style="font-size: 0.9rem; color: #555;">(${escapeHtml(post.userTitle || 'Usuario')})</span>${statusBadge}</h2>
-                        ${post.title ? `<h3 style="color: #3c4fff; margin: 10px 0;">${escapeHtml(post.title)}</h3>` : ''}
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h2 class="h5 card-post-header mb-0">
+                                ${escapeHtml(post.userName || 'Anónimo')}
+                                <span class="karma-title">(${escapeHtml(post.userTitle || 'Usuario')})</span>
+                                ${statusBadge}
+                            </h2>
+                            ${post.title ? `<h3 class="h5 text-primary mt-2">${escapeHtml(post.title)}</h3>` : ''}
+                        </div>
+                        ${canReport ? `<button class="btn btn-outline-danger btn-sm" onclick="abrirModalReportar(${post.idPost}, '${escapeHtml(post.userName || '')}', ${post.userId})">🚩 Reportar</button>` : ''}
                     </div>
-                    ${canReport ? `<button class="btn-report" onclick="abrirModalReportar(${post.idPost}, '${escapeHtml(post.userName || '')}', ${post.userId})">🚩 Reportar</button>` : ''}
-                </div>
-                <p>${escapeHtml(post.content || '')}</p>
-                <p style="font-size: 0.8rem; color: #888;">Publicado: ${post.publicationDate ? new Date(post.publicationDate).toLocaleString() : 'Fecha desconocida'}</p>
-                ${post.updateDate && post.publicationDate && new Date(post.updateDate).getTime() !== new Date(post.publicationDate).getTime()
-                    ? `<p style="font-size: 0.8rem; color: #888;">Editado: ${new Date(post.updateDate).toLocaleString()}</p>`
-                    : ''
-                }
-                <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; align-items: center;">
                     
-                    ${canVote ? `
-                        <div class="vote-widget">
-                            <button id="vote-btn-${post.idPost}" class="upvote-btn ${votedClass}" onclick="handleVote(this, ${post.idPost})">
-                                ▲
-                            </button>
-                            <span id="vote-count-${post.idPost}" class="vote-count">${post.voteCount}</span>
-                        </div>
-                    ` : `
-                        <div class="vote-widget">
-                            <button class="upvote-btn" disabled>▲</button>
-                            <span class="vote-count">${post.voteCount}</span>
-                        </div>
-                    `}
+                    <p class="card-text my-3">${escapeHtml(post.content || '')}</p>
+                    
+                    <small class="text-muted d-block">Publicado: ${post.publicationDate ? new Date(post.publicationDate).toLocaleString() : 'Fecha desconocida'}</small>
+                    ${post.updateDate && post.publicationDate && new Date(post.updateDate).getTime() !== new Date(post.publicationDate).getTime()
+                        ? `<small class="text-muted d-block">Editado: ${new Date(post.updateDate).toLocaleString()}</small>`
+                        : ''
+                    }
+                    
+                    <hr>
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        ${canVote ? `
+                            <div class="vote-widget d-flex align-items-center gap-2">
+                                <button id="vote-btn-${post.idPost}" class="upvote-btn ${votedClass}" onclick="handleVote(this, ${post.idPost})">▲</button>
+                                <span id="vote-count-${post.idPost}" class="vote-count">${post.voteCount}</span>
+                            </div>
+                        ` : `
+                            <div class="vote-widget d-flex align-items-center gap-2">
+                                <button class="upvote-btn" disabled>▲</button>
+                                <span class="vote-count">${post.voteCount}</span>
+                            </div>
+                        `}
 
-                    <button class="btn-secondary" onclick="abrirModalComentarios(${post.idPost})">💬 Comentarios</button>
-                    ${canEdit ? `
-                        <button class="btn-primary" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
-                        <button class="btn-danger" onclick="eliminarPost(${post.idPost})">🗑️ Eliminar</button>
-                    ` : ''}
+                        <button class="btn btn-secondary btn-sm" onclick="abrirModalComentarios(${post.idPost})">💬 Comentarios</button>
+                        ${canEdit ? `
+                            <button class="btn btn-outline-primary btn-sm" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="eliminarPost(${post.idPost})">🗑️ Eliminar</button>
+                        ` : ''}
+                    </div>
                 </div>
             `;
 
@@ -189,15 +207,15 @@ async function cargarPosts() {
         });
 
         if (postListDiv.innerHTML === '') {
-            postListDiv.innerHTML = '<p>No hay posts aprobados para mostrar, o tus posts están pendientes.</p>';
+            postListDiv.innerHTML = '<p class="text-center text-muted">No hay posts aprobados para mostrar, o tus posts están pendientes.</p>';
         }
 
     } catch (error) {
         console.error('Error al cargar posts:', error);
         if (error.message === 'AUTH_REQUIRED') {
-             postListDiv.innerHTML = `<p style="color: red;">Error al cargar posts: Tu sesión ha expirado. Por favor, inicia sesión.</p>`;
+             postListDiv.innerHTML = `<div class="alert alert-warning">Error al cargar posts: Tu sesión ha expirado. Por favor, inicia sesión.</div>`;
         } else {
-             postListDiv.innerHTML = `<p style="color: red;">Error al cargar los posts: ${error.message}</p>`;
+             postListDiv.innerHTML = `<div class="alert alert-danger">Error al cargar los posts: ${error.message}</div>`;
         }
     }
 }
@@ -206,7 +224,7 @@ async function cargarTopUsers() {
     const listContainer = document.getElementById('topUsersList');
     if (!listContainer) return;
 
-    listContainer.innerHTML = '<p style="font-size: 0.9rem; color: #666;">Cargando...</p>';
+    listContainer.innerHTML = '<li class="list-group-item text-muted small">Cargando...</li>';
 
     try {
         const response = await fetch(`${API_BASE_URL_FORO}/auth/top5`); 
@@ -218,7 +236,7 @@ async function cargarTopUsers() {
         const topUsers = await response.json();
 
         if (!Array.isArray(topUsers) || topUsers.length === 0) {
-            listContainer.innerHTML = '<p style="font-size: 0.9rem; color: #666;">Aún no hay usuarios destacados.</p>';
+            listContainer.innerHTML = '<li class="list-group-item text-muted small">Aún no hay usuarios destacados.</li>';
             return;
         }
 
@@ -226,15 +244,14 @@ async function cargarTopUsers() {
 
         topUsers.forEach(user => {
             const userElement = document.createElement('li');
+            userElement.className = 'list-group-item d-flex align-items-center gap-2';
             userElement.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 2rem;">👤</span>
-                    <div>
-                        <strong>${escapeHtml(user.userName || 'Usuario')}</strong>
-                        <p style="font-size: 0.85rem; color: #666; margin: 0;">
-                            ${user.reputacion || 0} reconocimientos
-                        </p>
-                    </div>
+                <span style="font-size: 2rem;">👤</span>
+                <div>
+                    <strong class="d-block">${escapeHtml(user.userName || 'Usuario')}</strong>
+                    <small class="text-muted">
+                        ${user.reputacion || 0} reconocimientos
+                    </small>
                 </div>
             `;
             listContainer.appendChild(userElement);
@@ -242,7 +259,7 @@ async function cargarTopUsers() {
 
     } catch (error) {
         console.error('Error al cargar top users:', error);
-        listContainer.innerHTML = '<p style="font-size: 0.9rem; color: red;">Error al cargar.</p>';
+        listContainer.innerHTML = '<li class="list-group-item text-danger small">Error al cargar.</li>';
     }
 }
 
@@ -353,13 +370,15 @@ function abrirModalEditar(postId, title, content) {
     if (editTitle) editTitle.value = title || '';
     if (editContent) editContent.value = content || '';
 
-    const modal = document.getElementById('modal-editar-post');
-    if (modal) modal.style.display = 'block';
+    if (modalEditarPost) {
+        modalEditarPost.show();
+    }
 }
 
 function cerrarModalEditar() {
-    const modal = document.getElementById('modal-editar-post');
-    if (modal) modal.style.display = 'none';
+    if (modalEditarPost) {
+        modalEditarPost.hide();
+    }
     currentEditPostId = null;
 }
 
@@ -428,9 +447,12 @@ async function eliminarPost(postId) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    modalEditarPost = new bootstrap.Modal(document.getElementById('modal-editar-post'));
+    modalComentarios = new bootstrap.Modal(document.getElementById('modal-comentarios'));
+    modalReportar = new bootstrap.Modal(document.getElementById('modal-reportar'));
+
     onAuthStatusChecked((loggedIn, userData) => {
         actualizarElementosUIAuth(userData);
-
     });
 
     cargarPosts();
@@ -456,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 const searchTerm = e.target.value.toLowerCase().trim();
-                const posts = document.querySelectorAll('#postList .post-card');
+                const posts = document.querySelectorAll('#postList .card');
 
                 posts.forEach(post => {
                     if (!searchTerm) {
@@ -472,21 +494,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }, 300);
         });
-    }
-
-    window.onclick = function(event) {
-        const modalEditar = document.getElementById('modal-editar-post');
-        const modalComentarios = document.getElementById('modal-comentarios');
-        const modalReportar = document.getElementById('modal-reportar');
-
-        if (event.target == modalEditar) {
-            cerrarModalEditar();
-        }
-        if (event.target == modalComentarios) {
-            cerrarModalComentarios();
-        }
-        if (event.target == modalReportar) {
-            cerrarModalReportar();
-        }
     }
 });

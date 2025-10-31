@@ -25,13 +25,15 @@ async function abrirModalReportar(postId, userName, userId) {
     currentReportPostIdReportes = postId;
     currentReportUserIdReportes = userId;
 
-    const modal = document.getElementById('modal-reportar');
-    if (modal) modal.style.display = 'block';
+    if (modalReportar) {
+        modalReportar.show();
+    }
 }
 
 function cerrarModalReportar() {
-    const modal = document.getElementById('modal-reportar');
-    if (modal) modal.style.display = 'none';
+    if (modalReportar) {
+        modalReportar.hide();
+    }
     const form = document.getElementById('form-reportar');
     if (form) form.reset();
     currentReportUserIdReportes = null;
