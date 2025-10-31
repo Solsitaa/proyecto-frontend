@@ -67,3 +67,19 @@ main {
     color: #555;
     font-weight: normal;
 }
+
+.requires-auth {
+    display: none !important; 
+}
+
+.requires-no-auth {
+    display: inline-block;
+}
+
+body.logged-in .requires-auth {
+    display: flex !important;
+}
+
+body.logged-in .requires-no-auth {
+    display: none !important;
+}

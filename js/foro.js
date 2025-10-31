@@ -70,48 +70,51 @@ async function handleAuth() {
 }
 
 function actualizarElementosUIAuth(userData) {
-    const authButton = document.getElementById('authButton');
     const perfilLink = document.getElementById('perfilLink');
     const adminLink = document.getElementById('adminLink');
-    const createPostSection = document.getElementById('createPostSection');
     
     const navUserAvatar = document.getElementById('navUserAvatar');
     const navUserName = document.getElementById('navUserName');
+    
+    const authButton = document.getElementById('authButton');
+    const navDiv = authButton ? authButton.parentElement : null;
+    let logoutLink = document.getElementById('logoutButtonForo');
 
-    if (authButton) {
-        if (userData) {
-            authButton.textContent = 'Cerrar sesión';
-            authButton.classList.remove('btn-primary');
-            authButton.classList.add('btn', 'btn-outline-warning');
 
-            if (perfilLink) perfilLink.style.display = 'flex'; 
-            
-            const avatarUrl = userData.avatarUrl || `https://robohash.org/${userData.userName}?set=set4`;
-            if (navUserAvatar) {
-                navUserAvatar.src = avatarUrl;
-                navUserAvatar.onerror = function() {
-                    this.onerror = null;
-                    this.src = `https://robohash.org/${userData.userName}?set=set4`;
-                }
+    if (userData) {
+        document.body.classList.add('logged-in');
+        
+        const avatarUrl = userData.avatarUrl || `https://robohash.org/${userData.userName}?set=set4`;
+        if (navUserAvatar) {
+            navUserAvatar.src = avatarUrl;
+            navUserAvatar.onerror = function() {
+                this.onerror = null;
+                this.src = `https://robohash.org/${userData.userName}?set=set4`;
             }
-            if (navUserName) navUserName.textContent = userData.userName;
-            
-            if (adminLink && userData.rol === 'ADMINISTRADOR') {
-                adminLink.style.display = 'inline';
-            } else if (adminLink) {
-                adminLink.style.display = 'none';
-            }
-            if (createPostSection) createPostSection.style.display = 'block';
-
-        } else {
-            authButton.textContent = 'Iniciar sesión';
-            authButton.classList.remove('btn-outline-warning');
-            authButton.classList.add('btn', 'btn-primary');
-
-            if (perfilLink) perfilLink.style.display = 'none';
-            if (adminLink) adminLink.style.display = 'none';
-            if (createPostSection) createPostSection.style.display = 'none';
         }
+        if (navUserName) navUserName.textContent = userData.userName;
+        
+        if (adminLink && userData.rol === 'ADMINISTRADOR') {
+            adminLink.style.display = 'inline';
+        } else if (adminLink) {
+            adminLink.style.display = 'none';
+        }
+        
+        if (!logoutLink && navDiv) {
+            logoutLink = document.createElement('button');
+            logoutLink.id = 'logoutButtonForo';
+            logoutLink.className = 'btn btn-outline-warning';
+            logoutLink.textContent = 'Cerrar sesión';
+            logoutLink.onclick = handleAuth;
+            navDiv.appendChild(logoutLink);
+        } else if (logoutLink) {
+           logoutLink.style.display = 'inline-block';
+        }
+
+    } else {
+        document.body.classList.remove('logged-in');
+        if (adminLink) adminLink.style.display = 'none';
+        if (logoutLink) logoutLink.style.display = 'none';
     }
 }
 
