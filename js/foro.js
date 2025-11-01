@@ -217,6 +217,7 @@ async function cargarPosts() {
                         `}
 
                         <button class="btn btn-secondary btn-sm" onclick="abrirModalComentarios(${post.idPost})">💬 Comentarios</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='post.html?id=${post.idPost}'">Ver post completo</button>
                         ${canEdit ? `
                             <button class="btn btn-outline-primary btn-sm" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
                             <button class="btn btn-outline-danger btn-sm" onclick="eliminarPost(${post.idPost})">🗑️ Eliminar</button>
