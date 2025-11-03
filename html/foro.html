@@ -3,109 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foro</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/foro.css" rel="stylesheet">
+    <title>Foro - Mente Libre</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color:#211931;">
-    <div class="container-fluid">
-        
-        <a class="navbar-brand d-flex align-items-center" href="/html/index.html">
-        <img src="../imagenes/logo (2).png" alt="Logo" height="50" class="me-2">
-        <span class="fw-bold">Mente Libre</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-        
-        <form class="d-flex mx-auto" style="width: 40%;">
-            <input class="form-control" type="search" placeholder="🔍 Buscar">
-        </form>
-
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="/html/CrearPost.html">Crear Post</a></li>
-            <li class="nav-item"><a class="nav-link" href="/html/MisPost.html">Mis Post</a></li>
-            <li class="nav-item"><a class="nav-link" href="/html/perfil.html">Perfil</a></li>
-
-            <li class="nav-item">
-            <a href="/html/login.html" class="btn btn-primary btn-sm me-2">Iniciar sesión</a>
-            </li>
-            <li class="nav-item">
-            <a href="/html/login.html" class="btn btn-outline-light btn-sm">Registrarse</a>
-            </li>
-        </ul>
+    <nav>
+        <div class="logoNav">
+            <a href="index.html">
+                <img src="../imagenes/logo.png" class="logo" alt="Logo">
+            </a>
+            <h1>Mente Libre</h1>
         </div>
-    </div>
+        <input type="search" id="searchInput" placeholder="🔍 Buscar posts..." style="max-width: 400px;">
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            <a href="index.html">Inicio</a>
+            <a href="perfil.html" id="perfilLink" style="display: none;">Perfil</a>
+            <a href="admin.html" id="adminLink" style="display: none;">Admin</a>
+            <button id="authButton" onclick="handleAuth()">Iniciar sesión</button>
+        </div>
     </nav>
 
     <div class="contenedor-foro">
-        <div class="post-list" id="postList">
-            <div class="post-card">
-                <div class="container mt-4">
-                    <div class="card p-3 mb-3">
-                        <h5>Usuario Anónimo</h5>
-                        <p>Hoy quiero compartir que después de varias semanas de terapia, finalmente siento que estoy avanzando. No es fácil, pero cada día es un paso adelante. Gracias a todos por su apoyo.</p>
-                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
+        <div class="post-list-container" style="flex: 1;">
+            <div id="createPostSection" style="margin-bottom: 30px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none;">
+                <h2>Crear Nueva Publicación</h2>
+                <div id="error-message-post" class="error-message"></div>
+                <div id="success-message-post" class="success-message"></div>
+                <form id="newPostForm" onsubmit="return handleCrearPost(event)">
+                    <div class="grupo">
+                        <label for="newPostTitle">Título (opcional):</label>
+                        <input type="text" id="newPostTitle" name="title" maxlength="50" placeholder="Título del post">
                     </div>
-                </div>
+                    <div class="grupo">
+                        <label for="newPostContent">Tu mensaje:</label>
+                        <textarea id="newPostContent" name="content" rows="4" placeholder="Comparte tus pensamientos aquí..." required maxlength="250"></textarea>
+                        <small id="charCount">0 / 250 caracteres</small>
+                    </div>
+                    <button type="submit" class="btn-primary">Publicar</button>
+                </form>
             </div>
 
-            <div class="post-card">
-                <div class="container mt-4">
-                    <div class="card p-3 mb-3">
-                        <h5>Usuario Anónimo</h5>
-                        <p>¿Alguien más ha experimentado ansiedad al intentar retomar actividades sociales? Me gustaría saber cómo lo han manejado.</p>
-                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="post-card">
-                <div class="container mt-4">
-                    <div class="card p-3 mb-3">
-                        <h5>Usuario Anónimo</h5>
-                        <p>Quiero agradecer a esta comunidad. Cuando me sentía solo, encontré aquí palabras de aliento que realmente marcaron la diferencia. No están solos, sigamos apoyándonos.</p>
-                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
-                    </div>
-                </div>
-            </div>
-            <div class="post-card">
-                <div class="container mt-4">
-                    <div class="card p-3 mb-3">
-                        <h5>Usuario Anónimo</h5>
-                        <p>Contenido del post...</p>
-                        <button class="recon-btn" class="reputacion" onclick="darReconocimiento(this)">⭐ Dar Reconocimiento</button>
-                    </div>
-                </div>
+            <div class="post-list" id="postList">
+                <p>Cargando posts...</p>
             </div>
         </div>
 
         <aside class="destacados">
             <h2>Usuarios Destacados</h2>
-            <ul>
-                <li>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 2rem;">👤</span>
-                        <div>
-                            <strong>Usuario 1</strong>
-                            <p style="font-size: 0.85rem; color: #666; margin: 0;">120 reconocimientos</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 2rem;">👤</span>
-                        <div>
-                            <strong>Usuario 2</strong>
-                            <p style="font-size: 0.85rem; color: #666; margin: 0;">95 reconocimientos</p>
-                        </div>
-                    </div>
-                </li>
+            <ul id="topUsersList">
             </ul>
         </aside>
     </div>
@@ -164,9 +109,9 @@
         </div>
     </div>
 
-    <script src="js/auth.js"></script>
-    <script src="js/comentarios.js"></script>
-    <script src="js/reportes.js"></script>
-    <script src="js/foro.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/comentarios.js"></script>
+    <script src="../js/reportes.js"></script>
+    <script src="../js/foro.js"></script>
 </body>
 </html>
