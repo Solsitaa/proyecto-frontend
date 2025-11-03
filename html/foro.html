@@ -7,7 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body class="d-flex flex-column">
+<body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark-custom shadow-sm">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -103,12 +103,46 @@
     </div>
   </div>
 
-  <div class="modal fade" id="modal-editar-post" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar Post</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <main class="container py-4">
+        <div class="row gx-4">
+            <div class="col-lg-9">
+                <div id="createPostSection" class="card shadow-sm border-0 mb-4 requires-auth">
+                    <div class="card-body p-4">
+                        <h2 class="h4 card-title mb-3">Crear Nueva Publicación</h2>
+                        <div id="error-message-post" class="alert alert-danger" style="display: none;"></div>
+                        <div id="success-message-post" class="alert alert-success" style="display: none;"></div>
+                        
+                        <form id="newPostForm" onsubmit="return handleCrearPost(event)">
+                            <div class="mb-3">
+                                <label for="newPostTitle" class="form-label">Título (opcional):</label>
+                                <input type="text" id="newPostTitle" name="title" maxlength="50" class="form-control" placeholder="Título del post">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPostContent" class="form-label">Tu mensaje:</label>
+                                <textarea id="newPostContent" name="content" rows="4" class="form-control" placeholder="Comparte tus pensamientos aquí..." required maxlength="250"></textarea>
+                                <small id="charCount" class="form-text text-muted">0 / 250 caracteres</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Publicar</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="post-list" id="postList">
+                    <p>Cargando posts...</p>
+                </div>
+            </div>
+
+            <aside class="col-lg-3">
+                <div class="sticky-top" style="top: 1.5rem;">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h2 class="h4 card-title text-center text-primary">Usuarios Destacados</h2>
+                            <ul id="topUsersList" class="list-group list-group-flush">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </aside>
         </div>
         <div class="modal-body">
           <form id="form-editar-post" onsubmit="return submitEditarPost(event)">
@@ -157,13 +191,20 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../js/auth.js"></script>
-  <script src="../js/comentarios.js"></script>
-  <script src="../js/reportes.js"></script>
-  <script src="../js/foro.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-  <script src="../js/notifications.js"></script>
+    <footer class="bg-dark-custom text-white p-4 mt-auto">
+      <div class="container d-flex justify-content-between align-items-center flex-wrap">
+          <p class="mb-0">&copy; 2025 Mente Libre. Todos los derechos reservados.</p>
+          <a href="contacto.html" class="text-white">Contacto</a>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/comentarios.js"></script>
+    <script src="../js/reportes.js"></script>
+    <script src="../js/foro.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script src="../js/notifications.js"></script>
 </body>
 </html>

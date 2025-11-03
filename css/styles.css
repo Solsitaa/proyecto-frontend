@@ -2,9 +2,13 @@ body {
   background: url('../imagenes/Fondo1.png') no-repeat center center fixed !important;
   background-size: cover !important;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-main { flex: 1; }
+main {
+  flex: 1;
+}
 
 .card, section {
   background-color: rgba(255, 255, 255, 0.85);
@@ -36,13 +40,17 @@ main { flex: 1; }
   padding: 10px 20px;
 }
 
-.navbar .nav-link,
-.navbar .navbar-brand h1 {
+.bg-dark-custom .container .nav-link:not(.btn),
+.bg-dark-custom .container h1,
+.bg-dark-custom .container span,
+.bg-dark-custom .container p,
+.bg-dark-custom .container a:not(.btn) {
   color: #30497c !important;
   transition: color 0.3s ease;
 }
 
-.navbar .nav-link:hover {
+.bg-dark-custom .container .nav-link:not(.btn):hover,
+.bg-dark-custom .container a:not(.btn):hover {
   color: #8a8787 !important;
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
 }
@@ -71,14 +79,15 @@ main { flex: 1; }
   border-color: #263e74 !important;
 }
 
-/* Visibilidad según login */
 .requires-auth { display: none !important; }
 .requires-no-auth { display: inline-flex !important; }
 
-body.logged-in .requires-auth { display: inline-flex !important; }
+body.logged-in .navbar .requires-auth { display: inline-flex !important; }
+
+body.logged-in main .requires-auth { display: block !important; }
+
 body.logged-in .requires-no-auth { display: none !important; }
 
-/* Efecto de scroll suave */
 html { scroll-behavior: smooth; }
 
 .vote-widget .upvote-btn {
