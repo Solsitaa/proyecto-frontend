@@ -1,194 +1,133 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a Mente Libre</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenido a Mente Libre</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark-custom shadow-sm">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="../imagenes/logo.png" alt="Mente Libre" class="logo-lg">
-                <h1 class="h3 ms-2 mb-0 text-white">Mente Libre</h1>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mainNav">
-                <div class="navbar-nav ms-auto align-items-center">
-                    <a class="nav-link text-white" href="quienes-somos.html">Quienes somos</a>
-                    <a class="nav-link text-white" href="foro.html">Foro</a>
-                    
-                    <a class="nav-link text-white d-flex align-items-center requires-auth" href="perfil.html" id="perfilLinkNav">
-                        <img src="https://via.placeholder.com/30" id="navUserAvatar" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; margin-right: 5px;">
-                        <span id="navUserName">Perfil</span>
-                    </a>
-                    
-                    <a class="nav-link text-white" href="admin.html" id="adminLinkNav" style="display: none;">Admin</a>
-                    
-                    <a class="nav-link requires-no-auth" href="registro.html" id="registroLinkNav">
-                        <button class="btn btn-outline-light btn-sm">Registrarse</button>
-                    </a>
-                    <a class="nav-link requires-no-auth" href="login.html" id="loginLinkNav">
-                        <button class="btn btn-primary btn-sm">Iniciar Sesión</button>
-                    </a>
-                </div>
-            </div>
+<body class="d-flex flex-column">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark-custom shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="../imagenes/logo-removebg-preview.png" alt="Mente Libre" class="logo-lg transparent">
+        <h1 class="h3 ms-2 mb-0 text-white">Mente Libre</h1>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <div class="navbar-nav ms-auto align-items-center">
+          <a class="nav-link text-white" href="quienes-somos.html">Quienes somos</a>
+          <a class="nav-link text-white" href="foro.html">Foro</a>
+
+          <a class="nav-link text-white d-flex align-items-center requires-auth" href="perfil.html" id="perfilLink">
+            <img src="https://via.placeholder.com/30" id="navUserAvatar" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; margin-right: 5px;">
+            <span id="navUserName">Perfil</span>
+          </a>
+
+          <a class="nav-link text-white" href="admin.html" id="adminLink" style="display: none;">Admin</a>
+
+          <a class="nav-link requires-no-auth" href="registro.html">
+            <button class="btn btn-outline-light btn-sm">Registrarse</button>
+          </a>
+          <button id="authButton" class="btn btn-primary btn-sm requires-no-auth" onclick="handleAuth()">Iniciar sesión</button>
         </div>
-    </nav>
+      </div>
+    </div>
+  </nav>
 
-    <main>
-        <div class="container">
-            <section class="row align-items-center py-5 my-5">
-                <div class="col-lg-6">
-                    <h1>Mente Libre</h1>
-                    <h2 class="h3 fw-light">Una pausa para respirar, un espacio para vivir.</h2>
-                    <h3 class="h5 fw-light text-muted mb-4">No estás solo. Aquí encontrarás recursos y una comunidad donde podrás cuidar tu salud mental.</h3>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-primary btn-lg" onclick="location.href='contacto.html'">Busca ayuda ahora</button>
-                        <button class="btn btn-secondary btn-lg" onclick="location.href='foro.html'">Explorar la comunidad</button>
-                    </div>
-                </div>
-                <div class="col-lg-6 text-center mt-4 mt-lg-0">
-                    <img src="../imagenes/afiche-apoyo.png" alt="Apoyo emocional" class="img-fluid" style="max-height: 400px;">
-                </div>
-            </section>
-
-            <section class="row align-items-center py-5 bg-light rounded-3">
-                <div class="col-lg-6 text-center">
-                    <img src="../imagenes/acompanamiento.png" alt="Acompañamiento" class="img-fluid" style="max-width: 400px;">
-                </div>
-                <div class="col-lg-6 mt-4 mt-lg-0">
-                    <div class="p-4">
-                        <h2 class="text-primary">Nuestro objetivo</h2>
-                        <p class="lead">En Mente Libre nuestro principal objetivo con el foro de salud mental es promover el bienestar emocional y prevenir el suicidio mediante educación, apoyo y estrategias integrales. Buscamos aumentar la conciencia sobre los signos de alerta, facilitar la detección temprana y ofrecer acompañamiento psicológico. Además, pretendemos reducir el estigma, fortalecer la resiliencia y disminuir los factores de riesgo asociados.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="py-5 my-5 text-center">
-                <h3 class="mb-4">¿Qué encontrarás en nuestro foro?</h3>
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body p-4">
-                                <img src="../imagenes/foro.png" alt="Foro de apoyo" class="img-fluid" style="height: 120px;">
-                                <h4 class="card-title text-primary mt-3">Foro de apoyo emocional</h4>
-                                <p class="card-text">Comparte experiencias y recibe apoyo de la comunidad</p>
-                                <button onclick="location.href='foro.html'" class="btn btn-outline-primary">Acceder</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body p-4">
-                                <img src="../imagenes/chat.png" alt="Chat" class="img-fluid" style="height: 120px;">
-                                <h4 class="card-title text-primary mt-3">Chat con especialistas</h4>
-                                <p class="card-text">Habla con profesionales de la salud mental</p>
-                                <button onclick="location.href='contacto.html'" class="btn btn-outline-primary">Contactar</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body p-4">
-                                <img src="../imagenes/contacto-emergencia.png" alt="Emergencia" class="img-fluid" style="height: 120px;">
-                                <h4 class="card-title text-primary mt-3">Contactos de emergencia</h4>
-                                <p class="card-text">Números y recursos para situaciones críticas</p>
-                                <button onclick="location.href='contacto.html'" class="btn btn-outline-primary">Ver contactos</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  <main class="py-5">
+    <div class="container bg-white bg-opacity-75 p-5 rounded shadow-lg">
+      <section class="row align-items-center py-5">
+        <div class="col-lg-6">
+          <h1 class="fw-bold text-primary">Mente Libre</h1>
+          <h2 class="h4 fw-light">Una pausa para respirar, un espacio para vivir.</h2>
+          <p class="text-muted">No estás solo. Aquí encontrarás recursos y una comunidad donde podrás cuidar tu salud mental.</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-primary btn-lg" onclick="location.href='contacto.html'">Busca ayuda ahora</button>
+            <button class="btn btn-secondary btn-lg" onclick="location.href='foro.html'">Explorar la comunidad</button>
+          </div>
         </div>
-
-        <section class="bg-primary text-white text-center p-5">
-            <div class="container">
-                <h1>Tu participación es clave</h1>
-                <p class="lead my-4">Ya sea que necesites ayuda, quieras ofrecerla o desees unirte a nuestra comunidad, aquí hay un lugar para ti. Juntos, podemos construir un espacio de esperanza y sanación.</p>
-                <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <button onclick="location.href='foro.html'" class="btn btn-light btn-lg">Unirse al foro</button>
-                    <button onclick="location.href='contacto.html'" class="btn btn-outline-light btn-lg">Contactar especialista</button>
-                    <button onclick="location.href='quienes-somos.html'" class="btn btn-outline-light btn-lg">Aprende a apoyar</button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-dark-custom text-white p-4 mt-5">
-        <div class="container d-flex justify-content-between align-items-center flex-wrap">
-            <p class="mb-0">&copy; 2025 Mente Libre. Todos los derechos reservados.</p>
-            <div class="d-flex gap-3">
-                <a href="contacto.html" class="text-white">Contacto</a>
-                <a href="quienes-somos.html" class="text-white">Quienes somos</a>
-            </div>
+        <div class="col-lg-6 text-center mt-4 mt-lg-0">
+          <img src="../imagenes/afiche-apoyo-removebg-preview.png" alt="Apoyo emocional" class="img-fluid transparent" style="max-height: 400px;">
         </div>
-    </footer>
+      </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/auth.js"></script>
-    
-    <script>
-         function actualizarNavIndex(loggedIn, userData) {
-            const navUserAvatar = document.getElementById('navUserAvatar');
-            const navUserName = document.getElementById('navUserName');
-            const adminLinkNav = document.getElementById('adminLinkNav');
-            const loginLinkNav = document.getElementById('loginLinkNav');
-            const navDiv = loginLinkNav ? loginLinkNav.parentElement : null;
-            let logoutLink = document.getElementById('logoutLinkNav');
+      <section class="row align-items-center py-5">
+        <div class="col-lg-6 text-center">
+          <img src="../imagenes/acompanamiento-removebg-preview.png" alt="Acompañamiento" class="img-fluid transparent" style="max-width: 400px;">
+        </div>
+        <div class="col-lg-6 mt-4 mt-lg-0">
+          <h2 class="text-primary">Nuestro objetivo</h2>
+          <p class="lead">En Mente Libre nuestro principal objetivo con el foro de salud mental es promover el bienestar emocional y prevenir el suicidio mediante educación, apoyo y estrategias integrales...</p>
+        </div>
+      </section>
 
-            if (loggedIn && userData) {
-                document.body.classList.add('logged-in');
-                
-                const avatarUrl = userData.avatarUrl || `https://robohash.org/${userData.userName}?set=set4`;
-                if (navUserAvatar) {
-                    navUserAvatar.src = avatarUrl;
-                    navUserAvatar.onerror = function() {
-                        this.onerror = null;
-                        this.src = `https://robohash.org/${userData.userName}?set=set4`;
-                    }
-                }
-                if (navUserName) navUserName.textContent = userData.userName;
+      <section class="py-5 text-center">
+        <h3 class="mb-4">¿Qué encontrarás en nuestro foro?</h3>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <img src="../imagenes/foro-removebg-preview.png" alt="Foro" class="img-fluid transparent" style="height: 120px;">
+                <h4 class="text-primary mt-3">Foro de apoyo emocional</h4>
+                <p>Comparte experiencias y recibe apoyo de la comunidad.</p>
+                <button onclick="location.href='foro.html'" class="btn btn-outline-primary">Acceder</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <img src="../imagenes/chat.png" alt="Chat" class="img-fluid transparent" style="height: 120px;">
+                <h4 class="text-primary mt-3">Chat con especialistas</h4>
+                <p>Habla con profesionales de la salud mental.</p>
+                <button onclick="location.href='contacto.html'" class="btn btn-outline-primary">Contactar</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <img src="../imagenes/contacto-emergencia-removebg-preview.png" alt="Emergencia" class="img-fluid transparent" style="height: 120px;">
+                <h4 class="text-primary mt-3">Contactos de emergencia</h4>
+                <p>Números y recursos para situaciones críticas.</p>
+                <button onclick="location.href='contacto.html'" class="btn btn-outline-primary">Ver contactos</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
 
-                if (adminLinkNav && userData.rol === 'ADMINISTRADOR') {
-                    adminLinkNav.style.display = 'inline';
-                } else if (adminLinkNav) {
-                    adminLinkNav.style.display = 'none';
-                }
+    <section class="bg-primary text-white text-center p-5 mt-5 rounded-3 shadow">
+      <div class="container">
+        <h1>Tu participación es clave</h1>
+        <p class="lead my-4">Ya sea que necesites ayuda, quieras ofrecerla o desees unirte a nuestra comunidad...</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+          <button onclick="location.href='foro.html'" class="btn btn-light btn-lg">Unirse al foro</button>
+          <button onclick="location.href='contacto.html'" class="btn btn-outline-light btn-lg">Contactar especialista</button>
+          <button onclick="location.href='quienes-somos.html'" class="btn btn-outline-light btn-lg">Aprende a apoyar</button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-                if (!logoutLink && navDiv) {
-                    logoutLink = document.createElement('a');
-                    logoutLink.href = '#';
-                    logoutLink.id = 'logoutLinkNav';
-                    logoutLink.className = 'nav-link';
-                    
-                    const logoutButton = document.createElement('button');
-                    logoutButton.className = 'btn btn-outline-warning btn-sm';
-                    logoutButton.textContent = 'Cerrar Sesión';
-                    
-                    logoutButton.onclick = function(event) {
-                        event.preventDefault();
-                        if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                            cerrarSesion();
-                        }
-                    };
-                    logoutLink.appendChild(logoutButton);
-                    navDiv.appendChild(logoutLink);
-                } else if (logoutLink) {
-                   logoutLink.style.display = 'inline-block';
-                }
+  <footer class="bg-dark-custom text-white p-4 mt-5">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap">
+      <p class="mb-0">&copy; 2025 Mente Libre. Todos los derechos reservados.</p>
+      <div class="d-flex gap-3">
+        <a href="contacto.html" class="text-white">Contacto</a>
+        <a href="quienes-somos.html" class="text-white">Quienes somos</a>
+      </div>
+    </div>
+  </footer>
 
-            } else {
-                document.body.classList.remove('logged-in');
-                if (adminLinkNav) adminLinkNav.style.display = 'none';
-                if (logoutLink) logoutLink.style.display = 'none';
-            }
-        }
-        onAuthStatusChecked(actualizarNavIndex);
-    </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/auth.js"></script>
 </body>
 </html>

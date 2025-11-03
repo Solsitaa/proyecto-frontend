@@ -1,85 +1,118 @@
 body {
-    background-color: #f4f7f6;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  background: url('../imagenes/Fondo1.png') no-repeat center center fixed !important;
+  background-size: cover !important;
+  min-height: 100vh;
 }
 
-main {
-    flex: 1;
+main { flex: 1; }
+
+.card, section {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
 }
 
-.navbar-brand img {
-    height: 50px;
+.container.bg-white.bg-opacity-75 {
+  background-color: rgba(255, 252, 245, 0.9) !important;
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
-.logo-lg {
-    height: 90px;
-}
+.navbar-brand img { height: 50px; }
+.logo-lg { height: 90px; }
 
 .bg-dark-custom {
-    background-color: #211931;
+  background: linear-gradient(90deg, #6c7caf, #263e74) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
 }
+
+.bg-dark-custom .container {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 10px 20px;
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand h1 {
+  color: #30497c !important;
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #8a8787 !important;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}
+
+.btn-outline-light {
+  background-color: #30497c !important;
+  border-color: #30497c !important;
+  color: #ffffff !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background-color: #263e74 !important;
+  border-color: #263e74 !important;
+}
+
+.btn-primary {
+  background-color: #30497c !important;
+  border-color: #30497c !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover {
+  background-color: #263e74 !important;
+  border-color: #263e74 !important;
+}
+
+/* Visibilidad según login */
+.requires-auth { display: none !important; }
+.requires-no-auth { display: inline-flex !important; }
+
+body.logged-in .requires-auth { display: inline-flex !important; }
+body.logged-in .requires-no-auth { display: none !important; }
+
+/* Efecto de scroll suave */
+html { scroll-behavior: smooth; }
 
 .vote-widget .upvote-btn {
-    background: #e6e9ff;
-    border: 1px solid #cdd3ff;
-    color: #211931;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    transition: all 0.3s ease;
-    padding: 0;
+  background: #e6e9ff;
+  border: 1px solid #cdd3ff;
+  color: #211931;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+  transition: all 0.3s ease;
+  padding: 0;
 }
 
-.vote-widget .upvote-btn:hover {
-    background-color: #cdd3ff;
-    transform: scale(1.05);
-}
-
-.vote-widget .upvote-btn.voted {
-    background: #3c4fff;
-    color: white;
-    border-color: #3c4fff;
-}
-
-.vote-widget .upvote-btn:disabled {
-    background: #f0f0f0;
-    cursor: not-allowed;
-}
+.vote-widget .upvote-btn:hover { background-color: #cdd3ff; transform: scale(1.05); }
+.vote-widget .upvote-btn.voted { background: #3c4fff; color: #fff; border-color: #3c4fff; }
+.vote-widget .upvote-btn:disabled { background: #f0f0f0; cursor: not-allowed; }
 
 .vote-widget .vote-count {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #211931;
-    min-width: 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #211931;
+  min-width: 20px;
 }
 
-.card-post-header {
-    font-size: 1.1rem;
+.card-post-header { font-size: 1.1rem; }
+.karma-title { font-size: 0.9rem; color: #555; font-weight: normal; }
+
+img.transparent {
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
 }
 
-.karma-title {
-    font-size: 0.9rem;
-    color: #555;
-    font-weight: normal;
-}
-
-.requires-auth {
-    display: none !important; 
-}
-
-.requires-no-auth {
-    display: inline-block;
-}
-
-body.logged-in .requires-auth {
-    display: flex !important;
-}
-
-body.logged-in .requires-no-auth {
-    display: none !important;
-}
+img.transparent:hover { opacity: 1; }
