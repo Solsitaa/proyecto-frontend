@@ -1,7 +1,8 @@
 let currentReportUserIdReportes = null;
 let currentReportPostIdReportes = null;
+let currentReportCommentIdReportes = null;
 
-async function abrirModalReportar(postId, userName, userId) {
+async function abrirModalReportar(targetId, userName, userId, type) {
     let userData;
     try {
         userData = await getCurrentUserData();
@@ -22,20 +23,30 @@ async function abrirModalReportar(postId, userName, userId) {
         return;
     }
 
-    currentReportPostIdReportes = postId;
     currentReportUserIdReportes = userId;
+    
+    if (type === 'POST') {
+        currentReportPostIdReportes = targetId;
+        currentReportCommentIdReportes = null;
+    } else if (type === 'COMMENT') {
+        currentReportCommentIdReportes = targetId;
+        currentReportPostIdReportes = null;
+    }
 
-    const modal = document.getElementById('modal-reportar');
-    if (modal) modal.style.display = 'block';
+    if (modalReportar) {
+        modalReportar.show();
+    }
 }
 
 function cerrarModalReportar() {
-    const modal = document.getElementById('modal-reportar');
-    if (modal) modal.style.display = 'none';
+    if (modalReportar) {
+        modalReportar.hide();
+    }
     const form = document.getElementById('form-reportar');
     if (form) form.reset();
     currentReportUserIdReportes = null;
     currentReportPostIdReportes = null;
+    currentReportCommentIdReportes = null;
 }
 
 async function submitReporte(event) {
@@ -68,7 +79,7 @@ async function submitReporte(event) {
         reason: reason,
         description: description,
         relatedPostId: currentReportPostIdReportes,
-        relatedCommentId: null
+        relatedCommentId: currentReportCommentIdReportes
     };
 
     try {

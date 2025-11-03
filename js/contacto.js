@@ -1,4 +1,4 @@
-function handleContacto(event) {
+async function handleContacto(event) {
     event.preventDefault();
 
     const nombre = document.getElementById('nombre').value.trim();
@@ -10,27 +10,45 @@ function handleContacto(event) {
         nombre: nombre,
         correo: correo,
         asunto: asunto,
-        mensaje: mensaje,
-        fecha: new Date().toISOString()
+        mensaje: mensaje
     };
 
-    const contactos = JSON.parse(localStorage.getItem('contactos') || '[]');
-    contactos.push(contacto);
-    localStorage.setItem('contactos', JSON.stringify(contactos));
-
     const successDiv = document.getElementById('success-message');
-    if (successDiv) {
-        successDiv.textContent = '¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.';
-        successDiv.style.display = 'block';
-    }
+    const submitButton = event.target.querySelector('button[type="submit"]');
 
-    document.getElementById('contactoForm').reset();
+    try {
+        if (submitButton) submitButton.disabled = true;
+        if (successDiv) successDiv.style.display = 'none';
 
-    setTimeout(() => {
-        if (successDiv) {
-            successDiv.style.display = 'none';
+        const response = await fetch('http://localhost:8080/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(contacto)
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en el servidor');
         }
-    }, 5000);
+
+        if (successDiv) {
+            successDiv.textContent = '¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.';
+            successDiv.style.display = 'block';
+        }
+
+        document.getElementById('contactoForm').reset();
+
+        setTimeout(() => {
+            if (successDiv) successDiv.style.display = 'none';
+        }, 5000);
+
+    } catch (error) {
+        console.error("Error al enviar contacto:", error);
+        alert("No se pudo enviar el mensaje. Inténtalo más tarde.");
+    } finally {
+        if (submitButton) submitButton.disabled = false;
+    }
 
     return false;
 }

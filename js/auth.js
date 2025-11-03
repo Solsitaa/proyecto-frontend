@@ -72,9 +72,7 @@ async function fetchAuth(url, options = {}) {
 
     } catch (error) {
         console.error('Error en fetchAuth:', error);
-        if (error.message === 'AUTH_REQUIRED') {
-            throw error;
-        }
+        if (error.message === 'AUTH_REQUIRED') throw error;
         throw new Error(error.message || 'Error de conexión o de servidor.');
     }
 }
@@ -124,9 +122,7 @@ async function handleRegistro(event) {
     try {
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(registroData),
             credentials: 'include'
         });
@@ -141,9 +137,7 @@ async function handleRegistro(event) {
         userDataPromise = null;
         showSuccess('Registro exitoso. Serás redirigido al login.');
 
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 2000);
+        setTimeout(() => { window.location.href = 'login.html'; }, 2000);
 
     } catch (error) {
         console.error('Error en el registro:', error);
@@ -162,17 +156,12 @@ async function handleLogin(event) {
         return;
     }
 
-    const loginData = {
-        identifier: identifier,
-        password: password
-    };
+    const loginData = { identifier: identifier, password: password };
 
     try {
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(loginData),
             credentials: 'include'
         });
@@ -197,12 +186,8 @@ async function handleLogin(event) {
 }
 
 async function getCurrentUserData() {
-    if (currentUserData) {
-        return currentUserData;
-    }
-    if (userDataPromise) {
-        return userDataPromise;
-    }
+    if (currentUserData) return currentUserData;
+    if (userDataPromise) return userDataPromise;
 
     userDataPromise = (async () => {
         try {
@@ -221,14 +206,23 @@ async function getCurrentUserData() {
             return null;
         }
     })();
+
     return userDataPromise;
+}
+
+function updateCurrentUserData(newUserData) {
+    if (newUserData) {
+        currentUserData = newUserData;
+        userDataPromise = Promise.resolve(newUserData);
+    } else {
+        currentUserData = null;
+        userDataPromise = null;
+    }
 }
 
 async function cerrarSesion() {
     try {
-        await fetchAuth(`${API_BASE_URL}/auth/logout`, {
-            method: 'POST',
-        });
+        await fetchAuth(`${API_BASE_URL}/auth/logout`, { method: 'POST' });
     } catch (error) {
         if (error.message !== 'AUTH_REQUIRED') {
             console.error("Error al llamar a /auth/logout en el backend:", error);
@@ -242,14 +236,10 @@ async function cerrarSesion() {
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
+    if (loginForm) loginForm.addEventListener('submit', handleLogin);
 
     const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', handleRegistro);
-    }
+    if (registerForm) registerForm.addEventListener('submit', handleRegistro);
 
     getCurrentUserData().then(userData => {
         console.log("Estado de login inicial verificado:", userData ? "Logueado como " + userData.userName : "No logueado");
@@ -263,10 +253,37 @@ function onAuthStatusChecked(callback) {
     document.addEventListener('authStatusChecked', (event) => {
         callback(event.detail.loggedIn, event.detail.userData);
     });
-
     if (userDataPromise !== null) {
-        getCurrentUserData().then(userData => {
-            callback(!!userData, userData);
-        });
+        getCurrentUserData().then(userData => callback(!!userData, userData));
     }
 }
+
+function handleAuth() {
+    getCurrentUserData().then(user => {
+        if (user) cerrarSesion();
+        else window.location.href = 'login.html';
+    });
+}
+
+onAuthStatusChecked((loggedIn, userData) => {
+    const body = document.body;
+    const authButton = document.getElementById('authButton');
+    const perfilLink = document.getElementById('perfilLink');
+    const adminLink = document.getElementById('adminLink');
+
+    if (loggedIn) {
+        body.classList.add('logged-in');
+        if (authButton) authButton.textContent = 'Cerrar sesión';
+        if (perfilLink && userData) {
+            const userNameSpan = document.getElementById('navUserName');
+            const userAvatar = document.getElementById('navUserAvatar');
+            if (userNameSpan) userNameSpan.textContent = userData.userName || 'Perfil';
+            if (userAvatar && userData.avatarUrl) userAvatar.src = userData.avatarUrl;
+        }
+        if (adminLink && userData?.rol === 'ADMIN') adminLink.style.display = 'block';
+    } else {
+        body.classList.remove('logged-in');
+        if (authButton) authButton.textContent = 'Iniciar sesión';
+        if (adminLink) adminLink.style.display = 'none';
+    }
+});

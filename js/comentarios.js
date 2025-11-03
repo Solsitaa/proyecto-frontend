@@ -2,8 +2,10 @@ let currentPostIdForComments = null;
 
 async function abrirModalComentarios(postId) {
     currentPostIdForComments = postId;
-    const modal = document.getElementById('modal-comentarios');
-    if (modal) modal.style.display = 'block';
+    
+    if (modalComentarios) {
+        modalComentarios.show();
+    }
 
     const formComentario = document.getElementById('form-comentario');
     if (formComentario) {
@@ -19,8 +21,9 @@ async function abrirModalComentarios(postId) {
 }
 
 function cerrarModalComentarios() {
-    const modal = document.getElementById('modal-comentarios');
-    if (modal) modal.style.display = 'none';
+    if (modalComentarios) {
+        modalComentarios.hide();
+    }
     currentPostIdForComments = null;
 }
 
@@ -28,7 +31,7 @@ async function cargarComentarios(postId) {
     const comentariosList = document.getElementById('comentarios-list');
     if (!comentariosList) return;
 
-    comentariosList.innerHTML = '<p>Cargando comentarios...</p>';
+    comentariosList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
 
     let userData = null;
     try {
@@ -39,12 +42,7 @@ async function cargarComentarios(postId) {
 
 
     try {
-        const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments`);
-        if (!response.ok) {
-            throw new Error('Error al cargar comentarios: ' + response.statusText);
-        }
-
-        const comentarios = await response.json();
+        const comentarios = await fetchAuth(`${API_BASE_URL}/posts/${postId}/comments`);
 
         comentariosList.innerHTML = '';
 
@@ -54,7 +52,7 @@ async function cargarComentarios(postId) {
 
 
         if (comentarios.length === 0) {
-            comentariosList.innerHTML = '<p style="color: #666;">Aún no hay comentarios. ¡Sé el primero en comentar!</p>';
+            comentariosList.innerHTML = '<p class="text-center text-muted p-3">Aún no hay comentarios. ¡Sé el primero en comentar!</p>';
             return;
         }
 
@@ -63,28 +61,61 @@ async function cargarComentarios(postId) {
             if (!comentario || typeof comentario !== 'object') return;
 
             const comentarioDiv = document.createElement('div');
-            comentarioDiv.className = 'comentario-item';
-            comentarioDiv.style.cssText = 'background: #f7f9ff; padding: 15px; border-radius: 8px; margin-bottom: 10px;';
+            comentarioDiv.className = 'list-group-item';
 
             let statusBadge = '';
             if (comentario.status === 'PENDIENTE') {
-                statusBadge = '<span style="font-size: 0.75rem; background-color: #fff4cc; color: #856404; padding: 2px 5px; border-radius: 3px; margin-left: 5px;">Pendiente</span>';
+                statusBadge = '<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill ms-2">Pendiente</span>';
             }
 
             const isOwner = userData && userData.userName === comentario.userName;
+            const canReport = userData && !isOwner;
+            const votedClass = comentario.hasVoted ? 'voted' : '';
+            const canVote = userData && !isOwner;
+
+            const commentUserName = escapeHtml(comentario.userName || 'usuario');
+            const fallbackSrc = `https://robohash.org/${commentUserName}?set=set4`;
+            const avatarSrc = escapeHtml(comentario.userAvatarUrl || fallbackSrc); 
 
             comentarioDiv.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <strong style="color: #3c4fff;">${escapeHtml(comentario.userName || 'Anónimo')}</strong>
-                    ${statusBadge}
-                </div>
-                <p style="margin: 8px 0; color: #333;">${escapeHtml(comentario.content || '')}</p>
-                <small style="color: #888;">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
-                ${isOwner ? `
-                    <div style="margin-top: 10px;">
-                        <button class="btn-small btn-danger" onclick="eliminarComentario(${comentario.id})">🗑️ Eliminar</button>
+                <div class="d-flex align-items-start gap-3">
+                    <img src="${avatarSrc}" alt="avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                    
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <strong class="text-primary">${commentUserName} <span class="karma-title">(${escapeHtml(comentario.userTitle || 'Usuario')})</span></strong>
+                            ${statusBadge}
+                        </div>
+                        <p class="mb-1 mt-1">${escapeHtml(comentario.content || '')}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <small class="text-muted">${comentario.publicationDate ? new Date(comentario.publicationDate).toLocaleString() : ''}</small>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                ${isOwner ? `
+                                    <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" onclick="eliminarComentario(${comentario.id})">🗑️</button>
+                                ` : ''}
+
+                                ${canReport ? `
+                                    <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" title="Reportar comentario" onclick="abrirModalReportar(${comentario.id}, '${commentUserName}', ${comentario.userId}, 'COMMENT')">🚩</button>
+                                ` : ''}
+
+                                ${canVote ? `
+                                    <div class="vote-widget d-flex align-items-center gap-1">
+                                        <button id="comment-vote-btn-${comentario.id}" class="upvote-btn ${votedClass}" style="width: 30px; height: 30px; font-size: 1rem;" onclick="handleCommentVote(this, ${comentario.id})">
+                                            ▲
+                                        </button>
+                                        <span id="comment-vote-count-${comentario.id}" class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
+                                    </div>
+                                ` : `
+                                    <div class="vote-widget d-flex align-items-center gap-1">
+                                        <button class="upvote-btn" style="width: 30px; height: 30px; font-size: 1rem;" disabled>▲</button>
+                                        <span class="vote-count" style="font-size: 0.9rem;">${comentario.voteCount}</span>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
                     </div>
-                ` : ''}
+                </div>
             `;
 
             if (comentario.status === 'APROBADO' || isOwner) {
@@ -93,14 +124,63 @@ async function cargarComentarios(postId) {
         });
 
         if (comentariosList.innerHTML === '') {
-            comentariosList.innerHTML = '<p style="color: #666;">No hay comentarios visibles.</p>';
+            comentariosList.innerHTML = '<p class="text-center text-muted p-3">No hay comentarios visibles.</p>';
         }
 
     } catch (error) {
         console.error('Error al cargar comentarios:', error);
-        comentariosList.innerHTML = `<p style="color: red;">Error al cargar los comentarios: ${error.message}</p>`;
+        comentariosList.innerHTML = `<div class="alert alert-danger">Error al cargar los comentarios: ${error.message}</div>`;
     }
 }
+
+async function handleCommentVote(button, commentId) {
+    let userData;
+    try {
+        userData = await getCurrentUserData();
+        if (!userData) {
+            alert('Debes iniciar sesión para votar.');
+            return;
+        }
+    } catch (authError) {
+        alert('Debes iniciar sesión para votar.');
+        return;
+    }
+
+    button.disabled = true;
+    const countSpan = document.getElementById(`comment-vote-count-${commentId}`);
+
+    try {
+        const voteResponse = await fetchAuth(`${API_BASE_URL}/comments/${commentId}/vote?type=LIKE`, {
+            method: 'POST'
+        });
+
+        if (countSpan) {
+            countSpan.textContent = voteResponse.newCount;
+        }
+        
+        if (voteResponse.voted) {
+            button.classList.add('voted');
+        } else {
+            button.classList.remove('voted');
+        }
+
+        await cargarTopUsers();
+
+    } catch (error) {
+        console.error('Error al votar en comentario:', error);
+        if (error.message === 'AUTH_REQUIRED') {
+            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'login.html';
+        } else {
+            alert(error.message || 'No se pudo registrar el voto.');
+        }
+    } finally {
+        if(button) {
+            button.disabled = false;
+        }
+    }
+}
+
 
 async function agregarComentario() {
     let userData;

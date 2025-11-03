@@ -4,93 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - Mente Libre</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body>
-    <header>
-        🧠 Mente Libre - Panel de Administración
+<body class="bg-light">
+    <header class="navbar navbar-dark bg-dark-custom shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="../imagenes/logo-removebg-preview.png" alt="Mente Libre" class="logo-lg">
+                <span class="h3 ms-2 mb-0 text-white">Mente Libre - Admin</span>
+            </a>
+            <a href="index.html" class="btn btn-outline-light">← Volver al Inicio</a>
+        </div>
     </header>
 
-    <nav style="background: white; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <div style="max-width: 1400px; margin: 0 auto; display: flex; gap: 20px; flex-wrap: wrap;">
-            <button class="tab-button active" onclick="cambiarTab('stats')">📊 Estadísticas</button>
-            <button class="tab-button" onclick="cambiarTab('posts')">📝 Posts Pendientes</button>
-            <button class="tab-button" onclick="cambiarTab('users')">👥 Usuarios</button>
-            <button class="tab-button" onclick="cambiarTab('reports')">🚩 Reportes</button>
-            <a href="index.html" style="margin-left: auto; color: #3c4fff; font-weight: bold;">← Volver al Inicio</a>
-        </div>
-    </nav>
-
-    <div class="contenedor-principal">
-        <div id="tab-stats" class="tab-content">
-            <h2>Estadísticas del Foro</h2>
-            <div id="stats-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
-                <div class="stat-card">
-                    <h3>Usuarios Totales</h3>
-                    <p id="stat-total-users">Cargando...</p>
+    <div class="container my-4">
+        <nav>
+            <div class="nav nav-tabs" id="adminTab" role="tablist">
+                <button class="nav-link active" id="nav-stats-tab" data-bs-toggle="tab" data-bs-target="#nav-stats" type="button" role="tab">📊 Estadísticas</button>
+                <button class="nav-link" id="nav-posts-tab" data-bs-toggle="tab" data-bs-target="#nav-posts" type="button" role="tab">📝 Posts Pendientes</button>
+                <button class="nav-link" id="nav-users-tab" data-bs-toggle="tab" data-bs-target="#nav-users" type="button" role="tab">👥 Usuarios</button>
+                <button class="nav-link" id="nav-reports-tab" data-bs-toggle="tab" data-bs-target="#nav-reports" type="button" role="tab">🚩 Reportes</button>
+            </div>
+        </nav>
+        
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-stats" role="tabpanel">
+                <div class="p-3">
+                    <h2>Estadísticas del Foro</h2>
+                    <div id="stats-container" class="row g-4 mt-3">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title text-primary h5">Usuarios Totales</h3>
+                                    <p id="stat-total-users" class="h2">Cargando...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title text-primary h5">Usuarios Activos</h3>
+                                    <p id="stat-active-users" class="h2">Cargando...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title text-primary h5">Usuarios Bloqueados</h3>
+                                    <p id="stat-blocked-users" class="h2">Cargando...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title text-primary h5">Posts Totales</h3>
+                                    <p id="stat-total-posts" class="h2">Cargando...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title text-primary h5">Posts Pendientes</h3>
+                                    <p id="stat-pending-posts" class="h2">Cargando...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card text-center shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="card-title text-primary h5">Posts Aprobados</h3>
+                                    <p id="stat-approved-posts" class="h2">Cargando...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <h3>Usuarios Activos</h3>
-                    <p id="stat-active-users">Cargando...</p>
+            </div>
+            <div class="tab-pane fade" id="nav-posts" role="tabpanel">
+                <div class="p-3">
+                    <h2>Posts Pendientes de Moderación</h2>
+                    <div id="pending-posts-list" class="mt-3"></div>
                 </div>
-                <div class="stat-card">
-                    <h3>Usuarios Bloqueados</h3>
-                    <p id="stat-blocked-users">Cargando...</p>
+            </div>
+            <div class="tab-pane fade" id="nav-users" role="tabpanel">
+                <div class="p-3">
+                    <h2>Gestión de Usuarios</h2>
+                    <div id="users-list" class="mt-3"></div>
                 </div>
-                <div class="stat-card">
-                    <h3>Posts Totales</h3>
-                    <p id="stat-total-posts">Cargando...</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Posts Pendientes</h3>
-                    <p id="stat-pending-posts">Cargando...</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Posts Aprobados</h3>
-                    <p id="stat-approved-posts">Cargando...</p>
+            </div>
+            <div class="tab-pane fade" id="nav-reports" role="tabpanel">
+                <div class="p-3">
+                    <h2>Reportes Pendientes</h2>
+                    <div id="reports-list" class="mt-3"></div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div id="tab-posts" class="tab-content" style="display: none;">
-            <h2>Posts Pendientes de Moderación</h2>
-            <div id="pending-posts-list"></div>
-        </div>
-
-        <div id="tab-users" class="tab-content" style="display: none;">
-            <h2>Gestión de Usuarios</h2>
-            <div id="users-list"></div>
-        </div>
-
-        <div id="tab-reports" class="tab-content" style="display: none;">
-            <h2>Reportes Pendientes</h2>
-            <div id="reports-list"></div>
+    <div class="modal fade" id="modal-resolve-report" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resolver Reporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-resolve-report" onsubmit="return submitResolverReporte(event)">
+                        <div class="mb-3">
+                            <label for="resolve-status" class="form-label">Decisión:</label>
+                            <select id="resolve-status" class="form-select" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="RESUELTO_SIN_ACCION">Resolver sin acción</option>
+                                <option value="RESUELTO_CON_PENALIZACION">Resolver con penalización</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="penalty-group" style="display: none;">
+                            <label for="karma-penalty" class="form-label">Penalización de Karma:</label>
+                            <input type="number" id="karma-penalty" class="form-control" min="0" step="0.1" value="5">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Resolver Reporte</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="modal-resolve-report" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="cerrarModalResolverReporte()">&times;</span>
-            <h2>Resolver Reporte</h2>
-            <form id="form-resolve-report" onsubmit="return submitResolverReporte(event)">
-                <div class="grupo">
-                    <label for="resolve-status">Decisión:</label>
-                    <select id="resolve-status" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="RESUELTO_SIN_ACCION">Resolver sin acción</option>
-                        <option value="RESUELTO_CON_PENALIZACION">Resolver con penalización</option>
-                    </select>
-                </div>
-                <div class="grupo" id="penalty-group" style="display: none;">
-                    <label for="karma-penalty">Penalización de Karma:</label>
-                    <input type="number" id="karma-penalty" min="0" step="0.1" value="5">
-                </div>
-                <button type="submit" class="btn-primary">Resolver Reporte</button>
-            </form>
-        </div>
-    </div>
-
-    <script src="js/auth.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
 </body>
 </html>
