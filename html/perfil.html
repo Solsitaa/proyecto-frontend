@@ -1,133 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mente Libre - Perfil de Usuario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <style>
-        #userAvatar {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border: 4px solid #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        #edit-avatar-preview {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mente Libre - Perfil de Usuario</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    #userAvatar {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border: 4px solid #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-radius: 50%;
+    }
+    #edit-avatar-preview {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .mood-box {
+      background-color: rgba(230, 233, 255, 0.75);
+      border: 1px solid #cdd3ff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .mood-box h5 {
+      color: #30497c;
+      font-weight: 600;
+    }
+    .mood-buttons button {
+      margin: 4px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+    }
+  </style>
 </head>
 <body>
-    <header class="navbar navbar-dark bg-dark-custom shadow-sm">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="../imagenes/logo-removebg-preview.png" alt="Mente Libre" class="logo-lg">
-                <span class="h3 ms-2 mb-0 text-white">Mente Libre</span>
-            </a>
-        </div>
-    </header>
-
-    <main class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow-sm border-0 text-center">
-                    <div class="card-body p-4 p-lg-5">
-                        <img src="https://via.placeholder.com/150" alt="Foto de usuario" id="userAvatar" class="rounded-circle mb-3">
-                        <h2 id="userName" class="text-primary h3">Cargando...</h2>
-                        <p id="userEmail" class="text-muted">Cargando...</p>
-                        <p>Título: <strong id="userKarmaTitle" class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">...</strong></p>
-                        <p>Reputación: <strong id="userReputacion" class="text-primary">...</strong></p>
-
-                        <div class="d-flex justify-content-around my-4">
-                            <div>
-                                <h3 id="userSessions" class="h1">--</h3>
-                                <span class="text-muted small">Sesiones (Próx.)</span>
-                            </div>
-                            <div>
-                                <h3 id="userMood" class="h1">--</h3>
-                                <span class="text-muted small">Ánimo (Próx.)</span>
-                            </div>
-                        </div>
-
-                        <div class="d-flex gap-2 justify-content-center">
-                            <button class="btn btn-primary" onclick="abrirModalEditarPerfil()">Editar Perfil</button>
-                            <button class="btn btn-info" onclick="window.location.href='mispost.html'">Mis Posts</button>
-                            <button class="btn btn-secondary" onclick="cerrarSesion()">Cerrar Sesión</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-center mt-4">
-                    <a href="index.html">← Volver al inicio</a>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div class="modal fade" id="modal-editar-perfil" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Perfil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="error-message-perfil" class="alert alert-danger" style="display: none;"></div>
-                    <form id="form-editar-perfil" onsubmit="return handleGuardarPerfil(event)">
-                        <div class="row">
-                            <div class="col-md-4 text-center">
-                                <img src="https://via.placeholder.com/100" id="edit-avatar-preview" class="img-thumbnail rounded-circle mb-2" alt="Avatar Preview">
-                                <button type="button" class="btn btn-sm btn-secondary w-100" id="btn-new-avatar" onclick="handleGenerarAvatar()">Nuevo Gato-Avatar 🐱</button>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label for="edit-nombre" class="form-label">Nombre:</label>
-                                    <input type="text" id="edit-nombre" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-apellido" class="form-label">Apellido:</label>
-                                    <input type="text" id="edit-apellido" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-email" class="form-label">Correo Electrónico:</label>
-                                    <input type="email" id="edit-email" class="form-control" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit-username" class="form-label">Nombre de Usuario:</label>
-                                    <input type="text" id="edit-username" class="form-control" required minlength="4">
-                                    <div class="form-text small">Este es el nombre que se mostrará en el foro (mín. 4 caracteres).</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="select-titulo" class="form-label">Título Visible:</label>
-                                    <select id="select-titulo" class="form-select">
-                                        <option>Cargando títulos...</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-end mt-4">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+  <header class="navbar navbar-dark bg-dark-custom shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="../imagenes/logo-removebg-preview.png" alt="Mente Libre" class="logo-lg">
+        <span class="h3 ms-2 mb-0 text-white">Mente Libre</span>
+      </a>
     </div>
-    
-    <footer class="bg-dark-custom text-white p-4 mt-auto">
-        <div class="container d-flex justify-content-between align-items-center flex-wrap">
-            <p class="mb-0">&copy; 2025 Mente Libre. Todos los derechos reservados.</p>
-            <a href="contacto.html" class="text-white">Contacto</a>
-        </div>
-    </footer>
+  </header>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/perfil.js"></script>
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-7">
+        <div class="card shadow-sm border-0 text-center">
+          <div class="card-body p-4 p-lg-5">
+            <div class="row align-items-center">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <img id="userAvatar" class="rounded-circle mb-3" alt="Foto de usuario">
+                <h2 id="userName" class="text-primary h3">Cargando...</h2>
+                <p id="userEmail" class="text-muted">Cargando...</p>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mood-box">
+                  <h5>Tu estado de ánimo</h5>
+                  <p id="estado-actual" class="small text-muted mb-3">Cargando...</p>
+                  <div class="mood-buttons d-flex flex-wrap justify-content-center">
+                    <button class="btn btn-success" data-mood="FELIZ">😊</button>
+                    <button class="btn btn-info" data-mood="TRANQUILO">😌</button>
+                    <button class="btn btn-warning" data-mood="ANSIOSO">😰</button>
+                    <button class="btn btn-danger" data-mood="TRISTE">😢</button>
+                    <button class="btn btn-primary" data-mood="MOTIVADO">💪</button>
+                    <button class="btn btn-secondary" data-mood="CANSADO">🥱</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="mt-4">Título: <strong id="userKarmaTitle" class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">...</strong></p>
+            <p>Reputación: <strong id="userReputacion" class="text-primary">...</strong></p>
+
+            <div class="d-flex gap-2 justify-content-center mt-4">
+              <button class="btn btn-primary" onclick="abrirModalEditarPerfil()">Editar Perfil</button>
+              <button class="btn btn-info" onclick="window.location.href='mispost.html'">Mis Posts</button>
+              <button class="btn btn-secondary" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <a href="index.html">← Volver al inicio</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="modal-editar-perfil" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="error-message-perfil" class="alert alert-danger" style="display: none;"></div>
+          <form id="form-editar-perfil" onsubmit="return handleGuardarPerfil(event)">
+            <div class="row">
+              <div class="col-md-4 text-center">
+                <img src="https://via.placeholder.com/100" id="edit-avatar-preview" class="img-thumbnail rounded-circle mb-2" alt="Avatar Preview">
+              </div>
+              <div class="col-md-8">
+                <div class="mb-3">
+                  <label for="edit-nombre" class="form-label">Nombre:</label>
+                  <input type="text" id="edit-nombre" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label for="edit-apellido" class="form-label">Apellido:</label>
+                  <input type="text" id="edit-apellido" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label for="edit-email" class="form-label">Correo Electrónico:</label>
+                  <input type="email" id="edit-email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label for="edit-username" class="form-label">Nombre de Usuario:</label>
+                  <input type="text" id="edit-username" class="form-control" required minlength="4">
+                  <div class="form-text small">Este es el nombre que se mostrará en el foro (mín. 4 caracteres).</div>
+                </div>
+                <div class="mb-3">
+                  <label for="select-titulo" class="form-label">Título Visible:</label>
+                  <select id="select-titulo" class="form-select">
+                    <option>Cargando títulos...</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="text-end mt-4">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark-custom text-white p-4 mt-auto">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap">
+      <p class="mb-0">&copy; 2025 Mente Libre. Todos los derechos reservados.</p>
+      <a href="contacto.html" class="text-white">Contacto</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/moods.js"></script>
+  <script src="../js/perfil.js"></script>
 </body>
 </html>
