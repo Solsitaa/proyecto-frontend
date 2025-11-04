@@ -4,7 +4,23 @@ let currentUser = null;
 function showErrorPerfil(message) {
     const errorDiv = document.getElementById('error-message-perfil');
     if (errorDiv) {
-        errorDiv.textContent = message || 'Ocurrió un error.';
+        let displayMessage = 'Ocurrió un error.';
+
+        if (message) {
+            try {
+                const errorObj = JSON.parse(message);
+                
+                if (errorObj.error) {
+                    displayMessage = errorObj.error;
+                } else {
+                    displayMessage = message;
+                }
+            } catch (e) {
+                displayMessage = message;
+            }
+        }
+        
+        errorDiv.textContent = displayMessage;
         errorDiv.style.display = 'block';
     }
 }
