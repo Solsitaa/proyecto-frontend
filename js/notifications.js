@@ -1,4 +1,4 @@
-const WS_BASE_URL = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace('/api','') : 'http://localhost:8080') + '/ws';
+const WS_BASE_URL = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace('https/api', 'wss').replace('http/api', 'ws') : 'wss://a-production-10b6.up.railway.app') + '/ws';
 let stompClientNotif = null;
 let notificationsCache = [];
 

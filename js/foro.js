@@ -1,4 +1,4 @@
-const API_BASE_URL_FORO = 'http://localhost:8080/api';
+const API_BASE_URL_FORO = 'https://a-production-10b6.up.railway.app/api';
 
 let currentEditPostId = null;
 let currentReportUserId = null;
