@@ -45,7 +45,7 @@ async function handleContacto(event) {
 
     } catch (error) {
         console.error("Error al enviar contacto:", error);
-        alert("No se pudo enviar el mensaje. Inténtalo más tarde.");
+        showToast("No se pudo enviar el mensaje. Inténtalo más tarde.");
     } finally {
         if (submitButton) submitButton.disabled = false;
     }
