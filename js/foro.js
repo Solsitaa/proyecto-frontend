@@ -166,9 +166,12 @@ async function cargarPosts() {
                 statusBadge = '<span class="badge bg-danger-subtle text-danger-emphasis rounded-pill ms-2">Rechazado</span>';
             }
 
-            const isOwner = userData && userData.userName === post.userName;
+            const isOwner = userData ? userData.userName === post.userName : false;
+            const isAdmin = userData ? userData.rol === 'ADMINISTRADOR' : false;
+            
             const canEdit = isOwner && post.status !== 'RECHAZADO';
-            const canReport = userData && !isOwner;
+            const canReport = (userData && !isOwner && !isAdmin);
+            const canAdminDelete = isAdmin && !isOwner;
 
             const canVote = userData && !isOwner;
             const votedClass = post.hasVoted ? 'voted' : '';
@@ -222,11 +225,14 @@ async function cargarPosts() {
                             <button class="btn btn-outline-primary btn-sm" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
                             <button class="btn btn-outline-danger btn-sm" onclick="eliminarPost(${post.idPost})">🗑️ Eliminar</button>
                         ` : ''}
+                        ${canAdminDelete ? `
+                            <button class="btn btn-danger btn-sm" onclick="eliminarPost(${post.idPost})">🗑️</button>
+                        ` : ''}
                     </div>
                 </div>
             `;
 
-            if (post.status === 'APROBADO' || isOwner) {
+            if (post.status === 'APROBADO' || isOwner || isAdmin) {
                 postListDiv.appendChild(postCard);
             }
         });

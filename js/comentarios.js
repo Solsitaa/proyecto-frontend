@@ -68,8 +68,11 @@ async function cargarComentarios(postId) {
                 statusBadge = '<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill ms-2">Pendiente</span>';
             }
 
-            const isOwner = userData && userData.userName === comentario.userName;
-            const canReport = userData && !isOwner;
+            const isOwner = userData ? userData.userName === comentario.userName : false;
+            const isAdmin = userData ? userData.rol === 'ADMINISTRADOR' : false;
+            const canReport = (userData && !isOwner && !isAdmin);
+            const canAdminDelete = isAdmin && !isOwner;
+            
             const votedClass = comentario.hasVoted ? 'voted' : '';
             const canVote = userData && !isOwner;
 
@@ -93,6 +96,10 @@ async function cargarComentarios(postId) {
                             <div class="d-flex align-items-center gap-2">
                                 ${isOwner ? `
                                     <button class="btn btn-outline-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" onclick="eliminarComentario(${comentario.id})">🗑️</button>
+                                ` : ''}
+                                
+                                ${canAdminDelete ? `
+                                    <button class="btn btn-danger btn-sm" style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .3rem; --bs-btn-font-size: .75rem;" onclick="eliminarComentario(${comentario.id})">🗑️</button>
                                 ` : ''}
 
                                 ${canReport ? `
@@ -118,7 +125,7 @@ async function cargarComentarios(postId) {
                 </div>
             `;
 
-            if (comentario.status === 'APROBADO' || isOwner) {
+            if (comentario.status === 'APROBADO' || isOwner || isAdmin) {
                 comentariosList.appendChild(comentarioDiv);
             }
         });
