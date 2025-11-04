@@ -10,10 +10,9 @@ async function registrarMood(estado) {
     const data = await response.json();
 
     if (!response.ok) {
-  showToast(data.error || "No puedes registrar más de un estado hoy.");
-  return;
-}
-
+        showToast(data.error || "No puedes registrar más de un estado hoy.");
+        return;
+    }
 
     document.getElementById("estado-actual").textContent =
       `Tu estado de hoy: ${data.estado}`;
@@ -54,12 +53,20 @@ async function obtenerMoodActual() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  obtenerMoodActual();
-
-  const botonesMood = document.querySelectorAll("[data-mood]");
-  botonesMood.forEach(btn => {
-    btn.addEventListener("click", () => {
-      registrarMood(btn.dataset.mood);
+    onAuthStatusChecked((loggedIn, userData) => {
+        if(loggedIn) {
+            obtenerMoodActual();
+            const botonesMood = document.querySelectorAll("[data-mood]");
+            botonesMood.forEach(btn => {
+                btn.addEventListener("click", () => {
+                registrarMood(btn.dataset.mood);
+                });
+            });
+        } else {
+            const estadoEl = document.getElementById("estado-actual");
+            if (estadoEl) {
+                estadoEl.textContent = "Inicia sesión para registrar tu estado.";
+            }
+        }
     });
-  });
 });

@@ -205,5 +205,13 @@ async function handleGuardarPerfil(event) {
 
 window.addEventListener('DOMContentLoaded', () => {
     modalEditarPerfil = new bootstrap.Modal(document.getElementById('modal-editar-perfil'));
-    cargarPerfil();
+    
+    onAuthStatusChecked((loggedIn, userData) => {
+        if (loggedIn) {
+            cargarPerfil();
+        } else {
+            alert("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
+            window.location.href = 'login.html';
+        }
+    });
 });

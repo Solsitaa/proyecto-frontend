@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const user = await getCurrentUserData();
-    if (!user) {
-        document.getElementById("myPostsList").innerHTML = "<p>Debes iniciar sesión para ver tus posts.</p>";
-        return;
-    }
-
-    loadMyPosts(user);
+    onAuthStatusChecked((loggedIn, user) => {
+        if (loggedIn) {
+            loadMyPosts(user);
+        } else {
+            document.getElementById("myPostsList").innerHTML = "<p>Debes iniciar sesión para ver tus posts. Redirigiendo...</p>";
+            setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+        }
+    });
 });
 
 async function loadMyPosts(user) {

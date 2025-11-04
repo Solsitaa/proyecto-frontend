@@ -113,13 +113,14 @@ async function handleCommentSubmission() {
   }
 }
 
-onAuthStatusChecked((loggedIn, userData) => {
-  if (loggedIn) {
-    commentForm.style.display = 'block';
-    commentBtn.onclick = handleCommentSubmission;
-  } else {
-    commentForm.style.display = 'none';
-  }
+document.addEventListener('DOMContentLoaded', () => {
+    onAuthStatusChecked((loggedIn, userData) => {
+        if (loggedIn) {
+            commentForm.style.display = 'block';
+            commentBtn.onclick = handleCommentSubmission;
+        } else {
+            commentForm.style.display = 'none';
+        }
+        cargarPostCompleto();
+    });
 });
-
-document.addEventListener('DOMContentLoaded', cargarPostCompleto);

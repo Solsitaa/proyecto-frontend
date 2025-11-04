@@ -129,7 +129,6 @@ async function cargarPosts() {
     try {
         userData = await getCurrentUserData();
     } catch (e) {
-        console.log("Error al obtener datos de usuario para cargar posts, continuando como anónimo.");
     }
 
 
@@ -152,7 +151,6 @@ async function cargarPosts() {
 
         posts.forEach(post => {
             if (!post || typeof post !== 'object') {
-                console.warn("Elemento inválido en la lista de posts:", post);
                 return;
             }
 
@@ -501,10 +499,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     onAuthStatusChecked((loggedIn, userData) => {
         actualizarElementosUIAuth(userData);
+        cargarPosts();
+        cargarTopUsers();
     });
-
-    cargarPosts();
-    cargarTopUsers();
 
     const contentTextarea = document.getElementById('newPostContent');
     const charCount = document.getElementById('charCount');

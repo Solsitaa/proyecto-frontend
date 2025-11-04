@@ -482,11 +482,18 @@ async function submitResolverReporte(event) {
 window.addEventListener('DOMContentLoaded', async () => {
     modalResolveReport = new bootstrap.Modal(document.getElementById('modal-resolve-report'));
     
-    const isAdmin = await verificarAccesoAdmin();
-    if (isAdmin) {
-        cargarEstadisticas();
-        setupTabListeners();
-    }
+    onAuthStatusChecked(async (loggedIn, userData) => {
+        if (loggedIn && userData.rol === 'ADMINISTRADOR') {
+            cargarEstadisticas();
+            setupTabListeners();
+        } else if (loggedIn) {
+            alert('Acceso denegado. Solo administradores pueden ver esta página.');
+            window.location.href = 'index.html';
+        } else {
+            alert('Acceso denegado. Debes iniciar sesión como administrador.');
+            window.location.href = 'login.html';
+        }
+    });
 });
 
 
