@@ -52,11 +52,11 @@ async function handleVote(button, postId) {
     try {
         userData = await getCurrentUserData();
         if (!userData) {
-            alert('Debes iniciar sesión para votar.');
+            showToast('Debes iniciar sesión para votar.');
             return;
         }
     } catch (authError) {
-        alert('Debes iniciar sesión para votar.');
+        showToast('Debes iniciar sesión para votar.');
         return;
     }
 
@@ -81,10 +81,10 @@ async function handleVote(button, postId) {
     } catch (error) {
         console.error('Error al votar:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo registrar el voto.');
+            showToast(error.message || 'No se pudo registrar el voto.');
         }
     } finally {
         if(button) {
@@ -97,7 +97,7 @@ async function handleCommentSubmission() {
   const textarea = document.getElementById('nuevo-comentario');
   const content = textarea?.value.trim();
   if (!content) {
-    alert('El comentario no puede estar vacío.');
+    showToast('El comentario no puede estar vacío.');
     return;
   }
   try {
@@ -109,7 +109,7 @@ async function handleCommentSubmission() {
     await cargarComentarios(postId);
   } catch (error) {
     console.error('Error al crear comentario:', error);
-    alert(error.message || 'No se pudo crear el comentario.');
+    showToast(error.message || 'No se pudo crear el comentario.');
   }
 }
 

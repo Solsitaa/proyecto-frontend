@@ -7,19 +7,19 @@ async function abrirModalReportar(targetId, userName, userId, type) {
     try {
         userData = await getCurrentUserData();
         if (!userData) {
-            alert('Debes iniciar sesión para reportar');
+            showToast('Debes iniciar sesión para reportar');
             window.location.href = 'login.html';
             return;
         }
     } catch {
-        alert('Error al verificar sesión. Intenta iniciar sesión.');
+        showToast('Error al verificar sesión. Intenta iniciar sesión.');
         window.location.href = 'login.html';
         return;
     }
 
 
     if (userData.idUser === userId) {
-        alert('No puedes reportarte a ti mismo');
+        showToast('No puedes reportarte a ti mismo');
         return;
     }
 
@@ -59,17 +59,17 @@ async function submitReporte(event) {
     const description = descriptionTextarea ? descriptionTextarea.value.trim() : '';
 
     if (!reason) {
-        alert('Debes seleccionar un motivo');
+        showToast('Debes seleccionar un motivo');
         return false;
     }
     if (!description) {
-        alert('Debes incluir una descripción');
+        showToast('Debes incluir una descripción');
         return false;
     }
 
 
     if (!currentReportUserIdReportes) {
-        alert("Error: No se ha identificado al usuario a reportar.");
+        showToast("Error: No se ha identificado al usuario a reportar.");
         return false;
     }
 
@@ -88,16 +88,16 @@ async function submitReporte(event) {
             body: JSON.stringify(reportData)
         });
 
-        alert('Reporte enviado exitosamente. Será revisado por un administrador.');
+        showToast('Reporte enviado exitosamente. Será revisado por un administrador.', 'success');
         cerrarModalReportar();
 
     } catch (error) {
         console.error('Error al enviar reporte:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo enviar el reporte');
+            showToast(error.message || 'No se pudo enviar el reporte');
         }
     }
 

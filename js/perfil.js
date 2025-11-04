@@ -35,7 +35,7 @@ async function cargarPerfil() {
     try {
         const usuario = await getCurrentUserData();
         if (!usuario) {
-            alert('No se pudo cargar la información del perfil. Por favor, inicia sesión.');
+            showToast('No se pudo cargar la información del perfil. Por favor, inicia sesión.');
             window.location.href = 'login.html';
             return;
         }
@@ -69,7 +69,7 @@ async function cargarPerfil() {
 
 function abrirModalEditarPerfil() {
     if (!currentUser) {
-        alert("Error, no se pueden cargar los datos del usuario.");
+        showToast("Error, no se pueden cargar los datos del usuario.");
         return;
     }
 
@@ -125,7 +125,7 @@ async function handleGenerarAvatar() {
         
     } catch (error) {
         console.error("Error al generar avatar:", error);
-        alert("Error al cargar un nuevo Gato-Avatar. Se mantendrá la imagen anterior.");
+        showToast("Error al cargar un nuevo Gato-Avatar. Se mantendrá la imagen anterior.");
         avatarPreview.src = originalSrc;
     } finally {
         if (button) button.disabled = false;
@@ -170,7 +170,7 @@ async function handleGuardarPerfil(event) {
         });
 
         if (credentialsChanged) {
-            alert("Tus datos de sesión (usuario o correo) han cambiado. Por seguridad, por favor vuelve a iniciar sesión.");
+            showToast("Tus datos de sesión (usuario o correo) han cambiado. Por seguridad, por favor vuelve a iniciar sesión.");
             await cerrarSesion();
         } else {
             updateCurrentUserData(updatedUser);
@@ -210,7 +210,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (loggedIn) {
             cargarPerfil();
         } else {
-            alert("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
+            showToast("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
             window.location.href = 'login.html';
         }
     });

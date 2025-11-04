@@ -14,11 +14,11 @@ async function handleVote(button, postId) {
     try {
         userData = await getCurrentUserData();
         if (!userData) {
-            alert('Debes iniciar sesión para votar.');
+            showToast('Debes iniciar sesión para votar.');
             return;
         }
     } catch (authError) {
-        alert('Debes iniciar sesión para votar.');
+        showToast('Debes iniciar sesión para votar.');
         return;
     }
 
@@ -45,10 +45,10 @@ async function handleVote(button, postId) {
     } catch (error) {
         console.error('Error al votar:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo registrar el voto.');
+            showToast(error.message || 'No se pudo registrar el voto.');
         }
     } finally {
         if(button) {
@@ -330,12 +330,12 @@ async function handleCrearPost(event) {
     try {
         userData = await getCurrentUserData();
         if (!userData) {
-            alert("Debes iniciar sesión para crear un post.");
+            showToast("Debes iniciar sesión para crear un post.");
             window.location.href = 'login.html';
             return false;
         }
     } catch(authError) {
-        alert("Error al verificar sesión. Por favor, inicia sesión de nuevo.");
+        showToast("Error al verificar sesión. Por favor, inicia sesión de nuevo.");
         window.location.href = 'login.html';
         return false;
     }
@@ -347,7 +347,7 @@ async function handleCrearPost(event) {
     const title = titleInput ? titleInput.value.trim() : null;
 
     if (!content) {
-        alert("El contenido del post no puede estar vacío.");
+        showToast("El contenido del post no puede estar vacío.");
         return false;
     }
 
@@ -440,7 +440,7 @@ async function submitEditarPost(event) {
 
 
     if (!content) {
-        alert('El contenido no puede estar vacío');
+        showToast('El contenido no puede estar vacío');
         return false;
     }
 
@@ -450,17 +450,17 @@ async function submitEditarPost(event) {
             body: JSON.stringify({ title: title || undefined, content })
         });
 
-        alert('Post actualizado exitosamente. Puede requerir re-aprobación.');
+        showToast('Post actualizado exitosamente. Puede requerir re-aprobación.', 'success');
         cerrarModalEditar();
         await cargarPosts();
 
     } catch (error) {
         console.error('Error al actualizar post:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo actualizar el post');
+            showToast(error.message || 'No se pudo actualizar el post');
         }
     }
 
@@ -477,16 +477,16 @@ async function eliminarPost(postId) {
             method: 'DELETE'
         });
 
-        alert('Post eliminado correctamente');
+        showToast('Post eliminado correctamente', 'success');
         await cargarPosts();
 
     } catch (error) {
         console.error('Error al eliminar post:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo eliminar el post');
+            showToast(error.message || 'No se pudo eliminar el post');
         }
     }
 }

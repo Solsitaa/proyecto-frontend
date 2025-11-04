@@ -8,13 +8,13 @@ async function verificarAccesoAdmin() {
     try {
         userData = await getCurrentUserData();
         if (!userData || userData.rol !== 'ADMINISTRADOR') {
-            alert('Acceso denegado. Solo administradores pueden ver esta página.');
+            showToast('Acceso denegado. Solo administradores pueden ver esta página.');
             window.location.href = 'index.html';
             return false;
         }
         return true;
     } catch (e) {
-        alert('Error al verificar sesión de administrador.');
+        showToast('Error al verificar sesión de administrador.');
         window.location.href = 'index.html';
         return false;
     }
@@ -56,10 +56,10 @@ async function cargarEstadisticas() {
     } catch (error) {
         console.error('Error al cargar estadísticas:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert('Error al cargar estadísticas: ' + error.message);
+            showToast('Error al cargar estadísticas: ' + error.message);
         }
     }
 }
@@ -107,7 +107,7 @@ async function cargarPostsPendientes() {
     } catch (error) {
         console.error('Error al cargar posts pendientes:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
             container.innerHTML = `<div class="alert alert-danger">Error al cargar posts pendientes: ${error.message}</div>`;
@@ -121,16 +121,16 @@ async function aprobarPost(postId) {
             method: 'PUT'
         });
 
-        alert('Post aprobado exitosamente');
+        showToast('Post aprobado exitosamente', 'success');
         await cargarPostsPendientes();
 
     } catch (error) {
         console.error('Error al aprobar post:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo aprobar el post');
+            showToast(error.message || 'No se pudo aprobar el post');
         }
     }
 }
@@ -145,16 +145,16 @@ async function eliminarPostAdmin(postId) {
             method: 'DELETE'
         });
 
-        alert('Post eliminado exitosamente');
+        showToast('Post eliminado exitosamente', 'success');
         await cargarPostsPendientes();
 
     } catch (error) {
         console.error('Error al eliminar post:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo eliminar el post');
+            showToast(error.message || 'No se pudo eliminar el post');
         }
     }
 }
@@ -215,7 +215,7 @@ async function cargarUsuarios() {
     } catch (error) {
         console.error('Error al cargar usuarios:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
             container.innerHTML = `<div class="alert alert-danger">Error al cargar usuarios: ${error.message}</div>`;
@@ -233,16 +233,16 @@ async function bloquearUsuario(userId) {
             method: 'PUT'
         });
 
-        alert('Usuario bloqueado exitosamente');
+        showToast('Usuario bloqueado exitosamente', 'success');
         await cargarUsuarios();
 
     } catch (error) {
         console.error('Error al bloquear usuario:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo bloquear el usuario');
+            showToast(error.message || 'No se pudo bloquear el usuario');
         }
     }
 }
@@ -256,16 +256,16 @@ async function desbloquearUsuario(userId) {
             method: 'PUT'
         });
 
-        alert('Usuario desbloqueado exitosamente');
+        showToast('Usuario desbloqueado exitosamente', 'success');
         await cargarUsuarios();
 
     } catch (error) {
         console.error('Error al desbloquear usuario:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo desbloquear el usuario');
+            showToast(error.message || 'No se pudo desbloquear el usuario');
         }
     }
 }
@@ -280,16 +280,16 @@ async function eliminarUsuario(userId) {
             method: 'DELETE'
         });
 
-        alert('Usuario eliminado exitosamente');
+        showToast('Usuario eliminado exitosamente', 'success');
         await cargarUsuarios();
 
     } catch (error) {
         console.error('Error al eliminar usuario:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo eliminar el usuario');
+            showToast(error.message || 'No se pudo eliminar el usuario');
         }
     }
 }
@@ -336,10 +336,10 @@ async function verPostsUsuario(userId, userName) {
     } catch (error) {
         console.error('Error al cargar posts del usuario:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert('Error al cargar posts del usuario: ' + error.message);
+            showToast('Error al cargar posts del usuario: ' + error.message);
             cargarUsuarios();
         }
     }
@@ -389,7 +389,7 @@ async function cargarReportes() {
     } catch (error) {
         console.error('Error al cargar reportes:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
             container.innerHTML = `<div class="alert alert-danger">Error al cargar reportes: ${error.message}</div>`;
@@ -437,7 +437,7 @@ async function submitResolverReporte(event) {
     const penaltyValue = penaltyInput ? penaltyInput.value : '0';
 
     if (!status) {
-        alert("Debes seleccionar una decisión.");
+        showToast("Debes seleccionar una decisión.");
         return false;
     }
 
@@ -447,7 +447,7 @@ async function submitResolverReporte(event) {
         : 0;
 
     if (isNaN(penalty) || penalty < 0) {
-        alert("La penalización de karma debe ser un número positivo o cero.");
+        showToast("La penalización de karma debe ser un número positivo o cero.");
         return false;
     }
 
@@ -462,17 +462,17 @@ async function submitResolverReporte(event) {
             body: JSON.stringify(resolutionData)
         });
 
-        alert('Reporte resuelto exitosamente');
+        showToast('Reporte resuelto exitosamente', 'success');
         cerrarModalResolverReporte();
         await cargarReportes();
 
     } catch (error) {
         console.error('Error al resolver reporte:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo resolver el reporte');
+            showToast(error.message || 'No se pudo resolver el reporte');
         }
     }
 
@@ -487,10 +487,10 @@ window.addEventListener('DOMContentLoaded', async () => {
             cargarEstadisticas();
             setupTabListeners();
         } else if (loggedIn) {
-            alert('Acceso denegado. Solo administradores pueden ver esta página.');
+            showToast('Acceso denegado. Solo administradores pueden ver esta página.');
             window.location.href = 'index.html';
         } else {
-            alert('Acceso denegado. Debes iniciar sesión como administrador.');
+            showToast('Acceso denegado. Debes iniciar sesión como administrador.');
             window.location.href = 'login.html';
         }
     });

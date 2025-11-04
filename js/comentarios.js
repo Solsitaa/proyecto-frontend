@@ -145,11 +145,11 @@ async function handleCommentVote(button, commentId) {
     try {
         userData = await getCurrentUserData();
         if (!userData) {
-            alert('Debes iniciar sesión para votar.');
+            showToast('Debes iniciar sesión para votar.');
             return;
         }
     } catch (authError) {
-        alert('Debes iniciar sesión para votar.');
+        showToast('Debes iniciar sesión para votar.');
         return;
     }
 
@@ -174,10 +174,10 @@ async function handleCommentVote(button, commentId) {
     } catch (error) {
         console.error('Error al votar en comentario:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo registrar el voto.');
+            showToast(error.message || 'No se pudo registrar el voto.');
         }
     } finally {
         if(button) {
@@ -192,12 +192,12 @@ async function agregarComentario() {
     try {
         userData = await getCurrentUserData();
         if (!userData) {
-            alert('Debes iniciar sesión para comentar');
+            showToast('Debes iniciar sesión para comentar');
             window.location.href = 'login.html';
             return;
         }
     } catch {
-        alert('Error al verificar sesión. Intenta iniciar sesión.');
+        showToast('Error al verificar sesión. Intenta iniciar sesión.');
         window.location.href = 'login.html';
         return;
     }
@@ -209,7 +209,7 @@ async function agregarComentario() {
     const content = textarea ? textarea.value.trim() : '';
 
     if (!content) {
-        alert('El comentario no puede estar vacío');
+        showToast('El comentario no puede estar vacío');
         return;
     }
 
@@ -225,10 +225,10 @@ async function agregarComentario() {
     } catch (error) {
         console.error('Error al crear comentario:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo crear el comentario');
+            showToast(error.message || 'No se pudo crear el comentario');
         }
     }
 }
@@ -246,16 +246,16 @@ async function eliminarComentario(comentarioId) {
             method: 'DELETE'
         });
 
-        alert('Comentario eliminado.');
+        showToast('Comentario eliminado.', 'success');
         await cargarComentarios(currentPostIdForComments);
 
     } catch (error) {
         console.error('Error al eliminar comentario:', error);
         if (error.message === 'AUTH_REQUIRED') {
-            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
             window.location.href = 'login.html';
         } else {
-            alert(error.message || 'No se pudo eliminar el comentario');
+            showToast(error.message || 'No se pudo eliminar el comentario');
         }
     }
 }

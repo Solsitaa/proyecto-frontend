@@ -75,19 +75,19 @@ async function submitEditarPost(postId) {
     const title = document.getElementById("edit-title").value.trim();
     const content = document.getElementById("edit-content").value.trim();
 
-    if (!content) return alert("El contenido no puede estar vacío.");
+    if (!content) return showToast("El contenido no puede estar vacío.");
 
     try {
         await fetchAuth(`${API_BASE_URL}/posts/${postId}`, {
             method: "PUT",
             body: JSON.stringify({ title, content })
         });
-        alert("Post actualizado correctamente. Puede requerir re-aprobación.");
+        showToast("Post actualizado correctamente. Puede requerir re-aprobación.", "success");
         const user = await getCurrentUserData();
         loadMyPosts(user);
     } catch (error) {
         console.error(error);
-        alert("Error al actualizar el post.");
+        showToast("Error al actualizar el post.");
     }
 }
 
@@ -95,11 +95,11 @@ async function eliminarPost(postId) {
     if (!confirm("¿Seguro quieres eliminar este post?")) return;
     try {
         await fetchAuth(`${API_BASE_URL}/posts/${postId}`, { method: "DELETE" });
-        alert("Post eliminado correctamente.");
+        showToast("Post eliminado correctamente.", "success");
         const user = await getCurrentUserData();
         loadMyPosts(user);
     } catch (error) {
         console.error(error);
-        alert("Error al eliminar el post.");
+        showToast("Error al eliminar el post.");
     }
 }
