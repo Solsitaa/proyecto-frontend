@@ -149,3 +149,32 @@ img.transparent:hover { opacity: 1; }
   border-color: #30497c;
   box-shadow: 0 0 0 3px rgba(48, 73, 124, 0.2);
 }
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.error {
+  border-left: 5px solid #e74c3c;
+}
+
+.toast.success {
+  border-left: 5px solid #2ecc71;
+}

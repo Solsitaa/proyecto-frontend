@@ -10,16 +10,17 @@ async function registrarMood(estado) {
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.error || "No puedes registrar más de un estado hoy.");
-      return;
-    }
+  showToast(data.error || "No puedes registrar más de un estado hoy.");
+  return;
+}
+
 
     document.getElementById("estado-actual").textContent =
       `Tu estado de hoy: ${data.estado}`;
-    alert("Estado registrado correctamente 🎯");
+    showToast("Estado registrado correctamente 🎯", "success");
   } catch (err) {
     console.error("Error al registrar mood:", err);
-    alert("Error al conectar con el servidor.");
+    showToast("Error al conectar con el servidor.");
   }
 }
 
