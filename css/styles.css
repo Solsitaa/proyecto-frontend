@@ -128,3 +128,24 @@ img.transparent {
 }
 
 img.transparent:hover { opacity: 1; }
+
+#searchForm {
+  min-width: 200px;
+}
+
+#searchForm input {
+  background-color: rgba(230, 233, 255, 0.7);
+  border: 1px solid #cdd3ff;
+  color: #211931;
+  border-radius: 8px;
+}
+
+#searchForm input::placeholder {
+  color: #5a6a8a;
+}
+
+#searchForm input:focus {
+  background-color: #ffffff;
+  border-color: #30497c;
+  box-shadow: 0 0 0 3px rgba(48, 73, 124, 0.2);
+}
