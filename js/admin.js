@@ -1,4 +1,4 @@
-const API_BASE_URL_ADMIN = 'http://localhost:8080/api';
+const API_BASE_URL_ADMIN = 'a-production-10b6.up.railway.app';
 
 let currentReportIdAdmin = null;
 let modalResolveReport = null;
