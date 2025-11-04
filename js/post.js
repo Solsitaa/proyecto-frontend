@@ -47,6 +47,52 @@ function renderPost(post) {
   postContainer.innerHTML = postHtml;
 }
 
+async function handleVote(button, postId) {
+    let userData;
+    try {
+        userData = await getCurrentUserData();
+        if (!userData) {
+            alert('Debes iniciar sesión para votar.');
+            return;
+        }
+    } catch (authError) {
+        alert('Debes iniciar sesión para votar.');
+        return;
+    }
+
+    button.disabled = true;
+    const countSpan = document.getElementById(`vote-count-${postId}`);
+
+    try {
+        const voteResponse = await fetchAuth(`${API_BASE_URL}/posts/${postId}/vote?type=LIKE`, {
+            method: 'POST'
+        });
+
+        if (countSpan) {
+            countSpan.textContent = voteResponse.newCount;
+        }
+        
+        if (voteResponse.voted) {
+            button.classList.add('voted');
+        } else {
+            button.classList.remove('voted');
+        }
+        
+    } catch (error) {
+        console.error('Error al votar:', error);
+        if (error.message === 'AUTH_REQUIRED') {
+            alert('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.');
+            window.location.href = 'login.html';
+        } else {
+            alert(error.message || 'No se pudo registrar el voto.');
+        }
+    } finally {
+        if(button) {
+            button.disabled = false;
+        }
+    }
+}
+
 async function handleCommentSubmission() {
   const textarea = document.getElementById('nuevo-comentario');
   const content = textarea?.value.trim();

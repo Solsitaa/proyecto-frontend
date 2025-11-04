@@ -180,6 +180,18 @@ async function cargarPosts() {
             const fallbackSrc = `https://robohash.org/${postUserName}?set=set4`;
             const avatarSrc = escapeHtml(post.userAvatarUrl || fallbackSrc);
 
+            let commentInfoHtml = '';
+            if (post.commentCount > 0) {
+                const commentText = post.commentCount === 1 ? '1 Comentario' : `${post.commentCount} Comentarios`;
+                let lastCommentDateStr = '';
+                if (post.lastCommentDate) {
+                    lastCommentDateStr = ` (Último: ${new Date(post.lastCommentDate).toLocaleDateString()})`;
+                }
+                commentInfoHtml = `<span class="text-muted small" style="margin-left: 8px; margin-right: 8px;">${commentText}${lastCommentDateStr}</span>`;
+            } else {
+                commentInfoHtml = `<span class="text-muted small" style="margin-left: 8px; margin-right: 8px;">Sin comentarios</span>`;
+            }
+
             postCard.innerHTML = `
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start">
@@ -219,7 +231,7 @@ async function cargarPosts() {
                             </div>
                         `}
 
-                        <button class="btn btn-secondary btn-sm" onclick="abrirModalComentarios(${post.idPost})">💬 Comentarios</button>
+                        ${commentInfoHtml}
                         <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='post.html?id=${post.idPost}'">Ver post completo</button>
                         ${canEdit ? `
                             <button class="btn btn-outline-primary btn-sm" onclick="abrirModalEditar(${post.idPost}, '${escapeHtml(post.title || '')}', '${escapeHtml(post.content || '')}')">✏️ Editar</button>
