@@ -2,6 +2,8 @@ const API_BASE_URL = 'https://a-production-10b6.up.railway.app/api'
 
 let currentUserData = null
 let userDataPromise = null
+let isRegistering = false
+let isLoggingIn = false
 
 function showError(message) {
   const errorDiv = document.getElementById('error-message')
@@ -59,39 +61,46 @@ async function fetchAuth(url, options = {}) {
 
 async function handleRegistro(event) {
   event.preventDefault()
-  const nombre = document.getElementById('nombre')?.value.trim()
-  const apellido = document.getElementById('apellido')?.value.trim()
-  const email = document.getElementById('email')?.value.trim()
-  const userName = document.getElementById('userName')?.value.trim()
-  const password = document.getElementById('password')?.value
-  const passwordConfirm = document.getElementById('passwordConfirm')?.value
+  if (isRegistering) return
+  isRegistering = true
 
-  if (!nombre || !apellido || !email || !userName || !password || !passwordConfirm) {
-    showError('Todos los campos son obligatorios.')
-    return
-  }
-
-  if (password !== passwordConfirm) {
-    showError('Las contraseñas no coinciden')
-    return
-  }
-  if (password.length < 6) {
-    showError('La contraseña debe tener al menos 6 caracteres')
-    return
-  }
-  if (userName.length < 4) {
-    showError('El nombre de usuario debe tener al menos 4 caracteres')
-    return
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
-    showError('Por favor ingresa un correo válido')
-    return
-  }
-
-  const registroData = { userName, nombre, apellido, email, password, passwordConfirm }
+  const form = event.target
+  const submitBtn = form.querySelector('button[type="submit"]')
+  if (submitBtn) submitBtn.disabled = true
 
   try {
+    const nombre = document.getElementById('nombre')?.value.trim()
+    const apellido = document.getElementById('apellido')?.value.trim()
+    const email = document.getElementById('email')?.value.trim()
+    const userName = document.getElementById('userName')?.value.trim()
+    const password = document.getElementById('password')?.value
+    const passwordConfirm = document.getElementById('passwordConfirm')?.value
+
+    if (!nombre || !apellido || !email || !userName || !password || !passwordConfirm) {
+      showError('Todos los campos son obligatorios.')
+      return
+    }
+
+    if (password !== passwordConfirm) {
+      showError('Las contraseñas no coinciden')
+      return
+    }
+    if (password.length < 6) {
+      showError('La contraseña debe tener al menos 6 caracteres')
+      return
+    }
+    if (userName.length < 4) {
+      showError('El nombre de usuario debe tener al menos 4 caracteres')
+      return
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      showError('Por favor ingresa un correo válido')
+      return
+    }
+
+    const registroData = { userName, nombre, apellido, email, password, passwordConfirm }
+
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -112,31 +121,46 @@ async function handleRegistro(event) {
   } catch (error) {
     console.error('Error en el registro:', error)
     showError(error.message)
+  } finally {
+    if (submitBtn) submitBtn.disabled = false
+    isRegistering = false
   }
 }
 
 async function handleLogin(event) {
   event.preventDefault()
-  const identifier = document.getElementById('identifier')?.value.trim()
-  const password = document.getElementById('password')?.value
-  if (!identifier || !password) {
-    showError('Por favor ingresa tu usuario/correo y contraseña.')
-    return
-  }
-  const loginData = { identifier, password }
+  if (isLoggingIn) return
+  isLoggingIn = true
+
+  const form = event.target
+  const submitBtn = form.querySelector('button[type="submit"]')
+  if (submitBtn) submitBtn.disabled = true
+
   try {
+    const identifier = document.getElementById('identifier')?.value.trim()
+    const password = document.getElementById('password')?.value
+
+    if (!identifier || !password) {
+      showError('Por favor ingresa tu usuario/correo y contraseña.')
+      return
+    }
+
+    const loginData = { identifier, password }
+
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginData),
       credentials: 'include'
     })
+
     if (!response.ok) {
       const errorText = await response.text()
       currentUserData = null
       userDataPromise = null
       throw new Error(errorText || `Error ${response.status}: ${response.statusText}`)
     }
+
     const userResponse = await response.json()
     currentUserData = userResponse
     userDataPromise = Promise.resolve(userResponse)
@@ -144,6 +168,9 @@ async function handleLogin(event) {
   } catch (error) {
     console.error('Error en el login:', error)
     showError(error.message)
+  } finally {
+    if (submitBtn) submitBtn.disabled = false
+    isLoggingIn = false
   }
 }
 
@@ -161,6 +188,16 @@ async function getCurrentUserData() {
     }
   })()
   return userDataPromise
+}
+
+function updateCurrentUserData(newUserData) {
+  if (newUserData) {
+    currentUserData = newUserData
+    userDataPromise = Promise.resolve(newUserData)
+  } else {
+    currentUserData = null
+    userDataPromise = null
+  }
 }
 
 async function cerrarSesion() {
@@ -182,31 +219,46 @@ function handleAuth() {
   })
 }
 
+function onAuthStatusChecked(callback) {
+  document.addEventListener('authStatusChecked', event => {
+    callback(event.detail.loggedIn, event.detail.userData)
+  })
+  if (userDataPromise !== null) {
+    getCurrentUserData().then(userData => callback(!!userData, userData))
+  }
+}
+
 if (!window.__AUTH_JS_LOADED__) {
   window.__AUTH_JS_LOADED__ = true
+
   document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm')
     const registerForm = document.getElementById('registerForm')
     const authButton = document.getElementById('authButton')
+
     if (loginForm && !loginForm.dataset.bound) {
       loginForm.dataset.bound = 'true'
       loginForm.addEventListener('submit', handleLogin)
     }
+
     if (registerForm && !registerForm.dataset.bound) {
       registerForm.dataset.bound = 'true'
       registerForm.addEventListener('submit', handleRegistro)
     }
+
     if (authButton && !authButton.dataset.bound) {
       authButton.dataset.bound = 'true'
       authButton.addEventListener('click', handleAuth)
     }
   })
+
   document.addEventListener('authStatusChecked', event => {
     const { loggedIn, userData } = event.detail
     const body = document.body
     const perfilLink = document.getElementById('perfilLink')
     const adminLink = document.getElementById('adminLink')
     const authButton = document.getElementById('authButton')
+
     if (loggedIn) {
       body.classList.add('logged-in')
       if (authButton) authButton.textContent = 'Cerrar sesión'
@@ -216,7 +268,7 @@ if (!window.__AUTH_JS_LOADED__) {
         if (userNameSpan) userNameSpan.textContent = userData.userName || 'Perfil'
         if (userAvatar && userData.avatarUrl) userAvatar.src = userData.avatarUrl
       }
-      if (adminLink && userData?.rol === 'ADMIN') adminLink.style.display = 'block'
+      if (adminLink && userData?.rol === 'ADMINISTRADOR') adminLink.style.display = 'block'
     } else {
       body.classList.remove('logged-in')
       if (authButton) authButton.textContent = 'Iniciar sesión'
@@ -225,14 +277,17 @@ if (!window.__AUTH_JS_LOADED__) {
   })
 }
 
-getCurrentUserData()
-  .then(userData => {
-    document.dispatchEvent(new CustomEvent('authStatusChecked', {
-      detail: { loggedIn: !!userData, userData }
-    }))
-  })
-  .catch(() => {
-    document.dispatchEvent(new CustomEvent('authStatusChecked', {
-      detail: { loggedIn: false, userData: null }
-    }))
-  })
+if (!window.__AUTH_INIT_CALLED__) {
+  window.__AUTH_INIT_CALLED__ = true
+  getCurrentUserData()
+    .then(userData => {
+      document.dispatchEvent(new CustomEvent('authStatusChecked', {
+        detail: { loggedIn: !!userData, userData }
+      }))
+    })
+    .catch(() => {
+      document.dispatchEvent(new CustomEvent('authStatusChecked', {
+        detail: { loggedIn: false, userData: null }
+      }))
+    })
+}
