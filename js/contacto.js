@@ -20,7 +20,7 @@ async function handleContacto(event) {
         if (submitButton) submitButton.disabled = true;
         if (successDiv) successDiv.style.display = 'none';
 
-        const response = await fetch('a-production-10b6.up.railway.app', {
+        const response = await fetch('https://a-production-10b6.up.railway.app/api/contact', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -1,4 +1,4 @@
-const API_POSTS="/api/posts";
+const API_POSTS="https://a-production-10b6.up.railway.app/api/posts";
 
 function getToken(){return localStorage.getItem("token")}
 

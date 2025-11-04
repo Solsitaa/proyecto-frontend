@@ -1,4 +1,4 @@
-const API_BASE_URL_FORO = 'a-production-10b6.up.railway.app';
+const API_BASE_URL_FORO = 'https://a-production-10b6.up.railway.app/api';
 
 let currentEditPostId = null;
 let currentReportUserId = null;

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'a-production-10b6.up.railway.app';
+const API_BASE_URL = 'https://a-production-10b6.up.railway.app/api';
 
 let currentUserData = null;
 let userDataPromise = null;

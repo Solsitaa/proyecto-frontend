@@ -1,4 +1,4 @@
-const API_BASE_URL_ADMIN = 'a-production-10b6.up.railway.app';
+const API_BASE_URL_ADMIN = 'https://a-production-10b6.up.railway.app/api';
 
 let currentReportIdAdmin = null;
 let modalResolveReport = null;
