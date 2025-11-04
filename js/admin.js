@@ -195,7 +195,7 @@ async function cargarUsuarios() {
                             <p class="card-text mb-1"><strong>Rol:</strong> ${escapeHtml(user.role || '')}</p>
                             <small class="text-muted">Registro: ${user.registerDate ? new Date(user.registerDate).toLocaleDateString() : ''}</small>
                         </div>
-                        ${!isAdmin ? `
+                        
                             <div class="d-flex flex-column gap-2 ms-3" style="min-width: 120px;">
                                 ${user.active
                                     ? `<button class="btn btn-warning btn-sm" onclick="bloquearUsuario(${user.id})">🚫 Bloquear</button>`
@@ -204,7 +204,7 @@ async function cargarUsuarios() {
                                 <button class="btn btn-secondary btn-sm" onclick="verPostsUsuario(${user.id}, '${escapeHtml(user.userName || '')}')">📝 Ver Posts</button>
                                 <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${user.id})">🗑️ Eliminar</button>
                             </div>
-                        ` : '<span class="text-muted fst-italic ms-3">Administrador</span>'}
+                        
                     </div>
                 </div>
             `;
