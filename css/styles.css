@@ -31,6 +31,8 @@ main {
   background: linear-gradient(90deg, #6c7caf, #263e74) !important;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(6px);
+  position: relative;
+  z-index: 1040;
 }
 
 .bg-dark-custom .container {
