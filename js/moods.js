@@ -60,13 +60,15 @@ async function obtenerMoodActual() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  onAuthStatusChecked((loggedIn, userData) => {
+  onAuthStatusChecked((loggedIn) => {
     const estadoEl = document.getElementById("estado-actual");
 
     if (loggedIn) {
       obtenerMoodActual();
       const botonesMood = document.querySelectorAll("[data-mood]");
       botonesMood.forEach(btn => {
+        if (btn.dataset.moodBound === "true") return;
+        btn.dataset.moodBound = "true";
         btn.addEventListener("click", () => {
           registrarMood(btn.dataset.mood);
         });
